@@ -346,7 +346,7 @@
     list.innerHTML = result.rows
       .map(
         (row) => `
-        <div class="neighbor">
+        <div class="neighbor" data-neighbor="${escapeHtml(row.word)}" title="Klik untuk melihat tetangga ${escapeHtml(row.word)}">
           <span class="neighbor-word">${escapeHtml(row.word)}</span>
           <span class="neighbor-track"><span class="neighbor-fill" style="--score:${Math.max(0, Math.min(1, row.score)).toFixed(4)}"></span></span>
           <span class="neighbor-score">${row.score.toFixed(3)}</span>
@@ -583,7 +583,7 @@
     });
 
     const customBox = $("#custom-query-box");
-    customBox.hidden = state.queryId !== "__custom__";
+    customBox.hidden = false;
     const sbertDisabled = $("#sbert-disabled-note");
     sbertDisabled.hidden = !(state.queryId === "__custom__" || !data.sbert);
   }
@@ -610,11 +610,30 @@
       renderWordExplorer();
     });
 
+    let wordTimer;
+    $("#word-input").addEventListener("input", (event) => {
+      window.clearTimeout(wordTimer);
+      const value = event.target.value.trim().toLowerCase();
+      if (!value) return;
+      wordTimer = window.setTimeout(() => {
+        state.word = value;
+        renderWordExplorer();
+      }, 120);
+    });
+
     $("#word-form").addEventListener("submit", (event) => {
       event.preventDefault();
       const value = $("#word-input").value.trim().toLowerCase();
       if (!value) return;
       state.word = value;
+      renderWordExplorer();
+    });
+
+    $("#neighbor-list").addEventListener("click", (event) => {
+      const row = event.target.closest("[data-neighbor]");
+      if (!row) return;
+      state.word = row.dataset.neighbor;
+      $("#word-input").value = state.word;
       renderWordExplorer();
     });
 
@@ -633,6 +652,10 @@
 
     querySelect.addEventListener("change", () => {
       state.queryId = querySelect.value;
+      if (state.queryId !== "__custom__") {
+        state.customText = "";
+        $("#custom-query").value = "";
+      }
       if (state.queryId === "__custom__" && state.method === "sbert") {
         state.method = "word_mean";
       }
@@ -641,7 +664,12 @@
 
     $("#custom-query").addEventListener("input", (event) => {
       state.customText = event.target.value;
-      if (state.queryId === "__custom__") render();
+      if (state.customText.trim()) {
+        state.queryId = "__custom__";
+        querySelect.value = "__custom__";
+        if (state.method === "sbert") state.method = "word_mean";
+      }
+      render();
     });
 
     $$('input[name="method"]').forEach((input) => {

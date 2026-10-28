@@ -10,7 +10,6 @@
 
 <section class="cover">
   <div class="cover-top">
-    <div class="cover-rule"></div>
     <div class="cover-kicker">Tugas Mandiri 3 - Kajian Content-based Filtering</div>
     <h1 class="cover-title">
       Content-Based Filtering dengan Word Embedding dan Sentence Embedding
@@ -39,19 +38,13 @@
 <h2>2. Content-Based Filtering</h2>
 <h3>2.1 Konsep</h3>
 <p>CBF membandingkan profil pengguna dengan profil item. Profil pengguna dibangun dari item yang disukai, misalnya dengan merata-ratakan vektor item tersebut. Skor rekomendasi dihitung dengan fungsi kemiripan:</p>
-<blockquote>
-<p><strong>Rumus.</strong> score(u, i) = similarity(profile(u), features(i))</p>
-</blockquote>
+<p class="formula"> score(u, i) = similarity(profile(u), features(i))</p>
 <p>Semakin mirip profil pengguna dengan fitur item, semakin tinggi skor item tersebut.</p>
 <h3>2.2 TF-IDF dan Cosine Similarity</h3>
 <p>TF-IDF memberi bobot tinggi pada kata yang sering muncul di satu dokumen tetapi jarang muncul di dokumen lain.</p>
-<blockquote>
-<p><strong>Rumus.</strong> tf-idf(t, d) = tf(t, d) × idf(t), dengan idf(t) = ln((1 + N) / (1 + df(t))) + 1</p>
-</blockquote>
+<p class="formula"> tf-idf(t, d) = tf(t, d) × idf(t), dengan idf(t) = ln((1 + N) / (1 + df(t))) + 1</p>
 <p>Setelah dokumen menjadi vektor, kemiripannya diukur dengan cosine similarity:</p>
-<blockquote>
-<p><strong>Rumus.</strong> cos(q, d) = (q · d) / (||q|| × ||d||)</p>
-</blockquote>
+<p class="formula"> cos(q, d) = (q · d) / (||q|| × ||d||)</p>
 <p>Nilai cosine mendekati 1 berarti dua vektor searah. Nilai 0 berarti tidak ada kemiripan.</p>
 <h3>2.3 Keterbatasan TF-IDF</h3>
 <ul>
@@ -111,9 +104,7 @@
 <p>Hasil ini menunjukkan bahwa word embedding dapat menangkap kedekatan makna. Namun, kata <em>space</em> juga dekat dengan <em>ranger</em> karena <em>Toy Story</em> memuat frasa “space ranger”. Ini menunjukkan keterbatasan embedding statis yang hanya memberi satu vektor per kata.</p>
 <h3>3.4 Penggunaan dalam CBF</h3>
 <p>Vektor kata digabungkan menjadi vektor dokumen dengan mean pooling:</p>
-<blockquote>
-<p><strong>Rumus.</strong> d = (1 / |T|) × Σ v_w</p>
-</blockquote>
+<p class="formula"> d = (1 / |T|) × Σ v_w</p>
 <p>Setelah itu, cosine similarity dihitung antara vektor query dan vektor item.</p>
 <pre><code class="language-python">def mean_sentence_vector(text, word_vectors):
     words = [w for w in tokenize(text) if w in word_vectors]

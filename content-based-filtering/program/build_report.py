@@ -22,7 +22,6 @@ import markdown
 COVER = """
 <section class="cover">
   <div class="cover-top">
-    <div class="cover-rule"></div>
     <div class="cover-kicker">Tugas Mandiri 3 - Kajian Content-based Filtering</div>
     <h1 class="cover-title">
       Content-Based Filtering dengan Word Embedding dan Sentence Embedding
@@ -125,6 +124,7 @@ def main() -> int:
         extensions=["extra", "sane_lists"],
         output_format="html5",
     )
+    body = body.replace('<p>::formula::', '<p class="formula">')
 
     # Hanya lampiran yang dimulai di halaman baru. Bagian utama dibuat mengalir
     # agar laporan ringkas dan tidak penuh halaman kosong.

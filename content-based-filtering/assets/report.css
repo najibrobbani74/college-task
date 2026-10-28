@@ -35,8 +35,6 @@ h1 {
 h2 {
   font-size: 14pt;
   margin: 1.3rem 0 0.45rem;
-  padding-bottom: 0.15rem;
-  border-bottom: 1px solid #000;
 }
 
 h3 {
@@ -91,12 +89,6 @@ strong {
   padding-top: 22mm;
 }
 
-.cover-rule {
-  width: 42mm;
-  height: 1px;
-  background: #000;
-  margin-bottom: 9mm;
-}
 
 .cover-kicker {
   font-family: Arial, Helvetica, sans-serif;
@@ -122,7 +114,6 @@ strong {
 }
 
 .cover-meta {
-  border-top: 1px solid #000;
   padding-top: 5mm;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -158,7 +149,6 @@ table {
 
 th,
 td {
-  border: 1px solid #000;
   padding: 0.28rem 0.35rem;
   text-align: left;
   vertical-align: top;
@@ -178,8 +168,7 @@ th {
 /* Rumus dan catatan */
 blockquote {
   margin: 0.55rem 0;
-  padding: 0.3rem 0 0.3rem 0.65rem;
-  border-left: 2px solid #000;
+  padding: 0.3rem 0;
   page-break-inside: avoid;
 }
 
@@ -194,8 +183,7 @@ blockquote p:last-child {
 /* Kode */
 pre {
   margin: 0.5rem 0 0.7rem;
-  padding: 0.5rem 0.6rem;
-  border: 1px solid #000;
+  padding: 0.25rem 0;
   font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 7.8pt;
   line-height: 1.45;
@@ -208,4 +196,10 @@ pre {
 code {
   font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 8.5pt;
+}
+
+.formula {
+  margin: 0.55rem 0;
+  text-align: center;
+  font-style: italic;
 }

@@ -597,6 +597,17 @@ textarea {
   font-size: 0.84rem;
 }
 
+.neighbor[data-neighbor] {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.15rem 0.25rem;
+  margin: -0.15rem -0.25rem;
+}
+
+.neighbor[data-neighbor]:hover {
+  background: var(--surface-2);
+}
+
 .neighbor-word {
   font-weight: 800;
   overflow: hidden;
@@ -612,10 +623,12 @@ textarea {
 }
 
 .neighbor-fill {
+  display: block;
   height: 100%;
   width: calc(var(--score) * 100%);
   border-radius: inherit;
   background: linear-gradient(90deg, var(--accent), #2dd4bf);
+  transition: width 0.35s ease;
 }
 
 .neighbor-score {
@@ -709,9 +722,11 @@ textarea {
 }
 
 .score-fill {
+  display: block;
   height: 100%;
   width: calc(var(--score) * 100%);
   background: linear-gradient(90deg, var(--accent-2), #60a5fa);
+  transition: width 0.35s ease;
 }
 
 .compare-table,

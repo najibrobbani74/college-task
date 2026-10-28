@@ -111,7 +111,7 @@
           <div class="card card-pad">
             <div class="controls">
               <div class="field">
-                <label for="query-select">Query</label>
+                <label for="query-select">Pilih film atau contoh</label>
                 <select id="query-select"></select>
               </div>
               <div class="field">
@@ -125,11 +125,12 @@
               <button class="button button-secondary" id="reset-demo" type="button">Reset</button>
             </div>
 
-            <div id="custom-query-box" hidden style="margin-top: 0.9rem">
+            <div id="custom-query-box" style="margin-top: 0.9rem">
               <div class="field">
-                <label for="custom-query">Teks query</label>
-                <textarea id="custom-query" placeholder="contoh: a lonely astronaut tries to survive on a distant planet"></textarea>
+                <label for="custom-query">Playground teks bebas</label>
+                <textarea id="custom-query" placeholder="Ketik deskripsi film... hasil diperbarui otomatis"></textarea>
               </div>
+              <p class="hint">Ketik teks untuk beralih ke mode teks bebas. Pilih film di atas untuk kembali ke contoh.</p>
             </div>
 
             <div class="note warm" id="sbert-disabled-note" hidden>

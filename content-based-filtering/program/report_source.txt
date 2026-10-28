@@ -15,7 +15,7 @@ Tujuan tugas ini adalah:
 
 CBF membandingkan profil pengguna dengan profil item. Profil pengguna dibangun dari item yang disukai, misalnya dengan merata-ratakan vektor item tersebut. Skor rekomendasi dihitung dengan fungsi kemiripan:
 
-> **Rumus.** score(u, i) = similarity(profile(u), features(i))
+::formula:: score(u, i) = similarity(profile(u), features(i))
 
 Semakin mirip profil pengguna dengan fitur item, semakin tinggi skor item tersebut.
 
@@ -23,11 +23,11 @@ Semakin mirip profil pengguna dengan fitur item, semakin tinggi skor item terseb
 
 TF-IDF memberi bobot tinggi pada kata yang sering muncul di satu dokumen tetapi jarang muncul di dokumen lain.
 
-> **Rumus.** tf-idf(t, d) = tf(t, d) × idf(t), dengan idf(t) = ln((1 + N) / (1 + df(t))) + 1
+::formula:: tf-idf(t, d) = tf(t, d) × idf(t), dengan idf(t) = ln((1 + N) / (1 + df(t))) + 1
 
 Setelah dokumen menjadi vektor, kemiripannya diukur dengan cosine similarity:
 
-> **Rumus.** cos(q, d) = (q · d) / (||q|| × ||d||)
+::formula:: cos(q, d) = (q · d) / (||q|| × ||d||)
 
 Nilai cosine mendekati 1 berarti dua vektor searah. Nilai 0 berarti tidak ada kemiripan.
 
@@ -81,7 +81,7 @@ Hasil ini menunjukkan bahwa word embedding dapat menangkap kedekatan makna. Namu
 
 Vektor kata digabungkan menjadi vektor dokumen dengan mean pooling:
 
-> **Rumus.** d = (1 / |T|) × Σ v_w
+::formula:: d = (1 / |T|) × Σ v_w
 
 Setelah itu, cosine similarity dihitung antara vektor query dan vektor item.
 
