@@ -15,7 +15,6 @@ Lalu buat PDF dengan Chrome/Chromium:
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 import markdown
@@ -140,13 +139,17 @@ def main() -> int:
         output_format="html5",
     )
 
-    # Setiap heading level 2 memulai halaman baru. Ini membuat laporan lebih
-    # mudah dibaca dan dicetak, tanpa menambahkan tag manual di sumber Markdown.
-    body = re.sub(r"(?=<h2>)", '<div class="page-break"></div>\n', body)
+    # Hanya lampiran yang dimulai di halaman baru. Bagian utama dibuat mengalir
+    # agar laporan ringkas dan tidak penuh halaman kosong.
+    body = body.replace(
+        '<h2>Lampiran',
+        '<div class="page-break"></div>\n<h2>Lampiran',
+        1,
+    )
 
     html = TEMPLATE.format(
         cover=COVER,
-        front_matter=ABSTRACT_AND_TOC,
+        front_matter="",
         body=body,
     )
     output = root / "report.html"

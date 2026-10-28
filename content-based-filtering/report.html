@@ -40,214 +40,94 @@
 </section>
 
 
-<section>
-  <div class="abstract">
-    <h2>Abstrak</h2>
-    <p>
-      Content-based filtering (CBF) merekomendasikan item berdasarkan kemiripan
-      antara profil pengguna dan fitur item. Pada domain teks, kualitas
-      rekomendasi sangat ditentukan oleh cara deskripsi item direpresentasikan.
-      Kajian ini membahas dua pendekatan representasi yang banyak digunakan:
-      <strong>word embedding</strong>, yang memetakan setiap kata ke vektor padat
-      berdasarkan konteks pemakaiannya, dan <strong>sentence embedding</strong>,
-      yang memetakan satu kalimat utuh ke vektor yang menangkap makna dan
-      komposisinya. Kajian dilengkapi implementasi sederhana pada 12 deskripsi
-      film. Word embedding dibangun dari matriks co-occurrence, PPMI, dan SVD;
-      sentence embedding dihitung dengan mean pooling dan dibandingkan dengan
-      Sentence-BERT. Hasil demonstrasi menunjukkan bahwa ketiga metode
-      (TF-IDF, word embedding, dan Sentence-BERT) sama-sama menempatkan
-      <em>The Martian</em> sebagai rekomendasi teratas untuk query
-      <em>Interstellar</em>, tetapi urutan berikutnya berbeda. TF-IDF dan mean
-      pooling masih dapat tertipu oleh kata yang sama pada konteks berbeda,
-      sedangkan Sentence-BERT menghasilkan peringkat yang lebih koheren secara
-      semantik. Kajian ini menyimpulkan bahwa pemilihan representasi adalah
-      trade-off antara kualitas semantik, biaya komputasi, dan kemudahan
-      interpretasi.
-    </p>
-    <p class="keywords">
-      <strong>Kata kunci:</strong> content-based filtering, word embedding,
-      sentence embedding, Word2Vec, Sentence-BERT, cosine similarity
-    </p>
-  </div>
-
-  <h2>Daftar Isi</h2>
-  <div class="toc">
-    <ol>
-      <li><span class="toc-num">1</span> Pendahuluan</li>
-      <li><span class="toc-num">2</span> Content-Based Filtering</li>
-      <li><span class="toc-num">3</span> Word Embedding</li>
-      <li><span class="toc-num">4</span> Sentence Embedding</li>
-      <li><span class="toc-num">5</span> Perbandingan dan Pembahasan</li>
-      <li><span class="toc-num">6</span> Kesimpulan</li>
-      <li><span class="toc-num">—</span> Referensi</li>
-      <li><span class="toc-num">A</span> Lampiran A: Struktur dan Cara Menjalankan Program</li>
-      <li><span class="toc-num">B</span> Lampiran B: Ringkasan Output Program</li>
-    </ol>
-  </div>
-
-  <div class="note blue" style="margin-top: 1.2rem">
-    <strong>Cara membaca laporan ini.</strong> Bagian 2 menjelaskan kerangka CBF
-    dan baseline TF-IDF. Bagian 3 dan 4 membahas word embedding dan sentence
-    embedding, masing-masing dengan contoh sederhana. Bagian 5 membandingkan
-    hasil, dan Bagian 6 merangkum. Program pendukung serta demo interaktif dapat
-    diakses melalui repositori yang tercantum pada halaman sampul.
-  </div>
-</section>
-
-<div class="page-break"></div>
 <h2>1. Pendahuluan</h2>
-<h3>1.1 Latar belakang</h3>
-<p>Jumlah konten digital yang tersedia bagi pengguna terus bertambah. Katalog film, buku, berita, produk, dan materi pembelajaran jauh melampaui kemampuan pengguna untuk memeriksanya satu per satu. Sistem rekomendasi muncul sebagai solusi untuk mengurangi beban tersebut: ia memilih sejumlah kecil item yang diperkirakan relevan, lalu menyusunnya dalam urutan yang berguna.</p>
-<p>Secara umum, sistem rekomendasi dapat dibagi menjadi dua keluarga besar. <strong>Collaborative filtering</strong> memanfaatkan pola interaksi banyak pengguna, misalnya "pengguna yang menyukai A juga menyukai B". <strong>Content-based filtering</strong> (CBF) tidak membutuhkan pola pengguna lain. Ia membangun profil pengguna dari item yang disukai, lalu membandingkan profil tersebut dengan fitur setiap item. Karena itu, CBF relatif kuat ketika item baru belum memiliki interaksi, tetapi lemah ketika pengguna baru belum memiliki profil.</p>
-<p>Pada CBF, fitur item dapat berupa metadata terstruktur (genre, tahun, penulis) atau teks bebas (sinopsis, deskripsi produk, isi berita). Teks menyimpan banyak informasi, tetapi tidak langsung dapat dibandingkan secara numerik. Di sinilah representasi teks berperan. Pendekatan klasik seperti <strong>TF-IDF</strong> mengubah teks menjadi vektor renggang berdasarkan frekuensi kata. Pendekatan ini cepat dan mudah dijelaskan, tetapi hanya mengenali kata yang sama persis. Ia tidak tahu bahwa "astronaut" dan "spaceman" bermakna dekat, atau bahwa kata "space" pada "space exploration" berbeda maknanya dari "space" pada "space ranger".</p>
-<p><strong>Word embedding</strong> dan <strong>sentence embedding</strong> menawarkan jalan keluar dari keterbatasan leksikal tersebut. Word embedding memberi setiap kata sebuah vektor padat yang dipelajari dari konteks; kata-kata yang sering muncul dalam konteks serupa akan berdekatan. Sentence embedding melangkah lebih jauh: ia memetakan satu kalimat atau paragraf menjadi satu vektor, sehingga urutan, konteks, dan komposisi kata ikut dipertimbangkan. Kedua pendekatan ini menjadi fondasi banyak sistem pencarian semantik dan rekomendasi modern.</p>
-<h3>1.2 Rumusan masalah</h3>
-<p>Kajian ini menjawab empat pertanyaan berikut.</p>
-<ol>
-<li>Bagaimana content-based filtering bekerja dan mengapa representasi item menjadi kunci?</li>
-<li>Bagaimana word embedding dan sentence embedding merepresentasikan teks?</li>
-<li>Bagaimana kedua pendekatan digunakan dalam CBF, serta apa kelebihan dan keterbatasannya?</li>
-<li>Apa yang ditunjukkan oleh contoh sederhana ketika ketiga representasi dibandingkan pada data yang sama?</li>
-</ol>
-<h3>1.3 Tujuan</h3>
+<p>Content-based filtering (CBF) adalah metode rekomendasi yang menyarankan item berdasarkan kemiripan antara item yang disukai pengguna dan item lain. Metode ini tidak membutuhkan data pengguna lain, sehingga cocok ketika item baru belum memiliki interaksi. Kualitas CBF sangat bergantung pada cara fitur item direpresentasikan. Pada teks, TF-IDF hanya melihat kata yang sama, sedangkan word embedding dan sentence embedding dapat menangkap kemiripan makna.</p>
+<p>Tujuan tugas ini adalah:</p>
 <ul>
-<li>Menjelaskan konsep dasar CBF, TF-IDF, dan cosine similarity.</li>
-<li>Menjelaskan cara kerja word embedding (Word2Vec, GloVe, FastText, dan PPMI+SVD) serta penggunaannya dalam CBF.</li>
-<li>Menjelaskan sentence embedding (mean pooling, Doc2Vec, Universal Sentence Encoder, dan Sentence-BERT) serta penggunaannya.</li>
-<li>Menyajikan contoh sederhana yang dapat dijalankan ulang dan membandingkan hasil ketiga representasi.</li>
-<li>Merumuskan rekomendasi praktis mengenai kapan masing-masing pendekatan sebaiknya digunakan.</li>
+<li>Menjelaskan konsep dasar content-based filtering.</li>
+<li>Menjelaskan cara kerja word embedding dan sentence embedding.</li>
+<li>Memberikan contoh sederhana penggunaan keduanya.</li>
+<li>Membandingkan hasil TF-IDF, word embedding, dan Sentence-BERT pada data yang sama.</li>
 </ul>
-<h3>1.4 Batasan</h3>
-<p>Kajian ini berfokus pada CBF berbasis teks dan tidak membahas collaborative filtering secara mendalam. Eksperimen menggunakan 12 deskripsi film berbahasa Inggris dan bukan merupakan benchmark produksi. Word embedding dilatih dari korpus kecil dengan PPMI+SVD agar prosesnya transparan; ini bukan Word2Vec yang dilatih pada miliaran kata. Sentence-BERT menggunakan model <code>all-MiniLM-L6-v2</code> yang sudah dilatih. Angka-angka pada laporan bersifat ilustratif dan dapat berubah pada data atau model lain.</p>
-<h3>1.5 Metode</h3>
-<p>Metode yang digunakan adalah kajian pustaka yang dilengkapi eksperimen kecil. Kajian pustaka mencakup buku sistem rekomendasi, makalah Word2Vec, GloVe, FastText, Doc2Vec, Sentence-BERT, dan literatur evaluasi sistem rekomendasi. Eksperimen dijalankan melalui program Python <code>cbf_embeddings.py</code> yang menghasilkan tiga representasi untuk data yang sama: TF-IDF, word embedding dengan mean pooling, dan Sentence-BERT. Hasilnya ditampilkan pada halaman demo interaktif dan dirangkum di Bagian 5.</p>
-<div class="page-break"></div>
 <h2>2. Content-Based Filtering</h2>
-<h3>2.1 Definisi dan intuisi</h3>
-<p>Content-based filtering adalah pendekatan yang merekomendasikan item berdasarkan kemiripan antara <strong>profil pengguna</strong> dan <strong>profil item</strong>. Profil item dibangun dari fitur item; profil pengguna dibangun dari item yang pernah disukai, dibeli, dibaca, atau diberi rating tinggi. Skor relevansi biasanya berupa fungsi kemiripan:</p>
+<h3>2.1 Konsep</h3>
+<p>CBF membandingkan profil pengguna dengan profil item. Profil pengguna dibangun dari item yang disukai, misalnya dengan merata-ratakan vektor item tersebut. Skor rekomendasi dihitung dengan fungsi kemiripan:</p>
 <blockquote>
 <p><strong>Rumus.</strong> score(u, i) = similarity(profile(u), features(i))</p>
-<p>profile(u): representasi preferensi pengguna; features(i): representasi fitur item; similarity: fungsi seperti cosine, Euclidean, atau Jaccard.</p>
 </blockquote>
-<p>Intuisinya sederhana: jika pengguna menyukai film tentang astronot yang berjuang di luar angkasa, sistem mencari item lain yang memiliki fitur serupa, misalnya deskripsi tentang astronot, planet, dan bertahan hidup. Berbeda dari collaborative filtering, CBF tidak memerlukan data pengguna lain; ia hanya membutuhkan fitur item dan preferensi pengguna.</p>
-<h3>2.2 Komponen sistem</h3>
-<pre><code class="language-text">Item profile  →  User profile  →  Scoring (cosine)  →  Ranking &amp; feedback
-</code></pre>
-<p>Komponen pertama adalah <strong>item representation</strong>. Fitur dapat berupa genre, sutradara, tahun, kata kunci, atau deskripsi lengkap. Pada sistem berbasis teks, deskripsi perlu diubah menjadi vektor. Komponen kedua adalah <strong>user profile</strong>. Profil dapat berupa vektor rata-rata dari item yang disukai, vektor berbobot rating, atau model yang dilatih dari umpan balik. Komponen ketiga adalah <strong>similarity function</strong>. Cosine similarity paling sering dipakai karena tidak terpengaruh panjang vektor dan mudah dihitung. Komponen keempat adalah <strong>ranking</strong> dan <strong>feedback loop</strong>: item dengan skor tertinggi ditampilkan, lalu interaksi pengguna memperbarui profil.</p>
-<h3>2.3 Baseline TF-IDF dan cosine similarity</h3>
-<p>TF-IDF adalah baseline klasik yang kuat untuk teks. Bobot sebuah kata meningkat jika kata itu sering muncul di dokumen tertentu, tetapi menurun jika kata itu muncul di banyak dokumen. Secara ringkas:</p>
+<p>Semakin mirip profil pengguna dengan fitur item, semakin tinggi skor item tersebut.</p>
+<h3>2.2 TF-IDF dan Cosine Similarity</h3>
+<p>TF-IDF memberi bobot tinggi pada kata yang sering muncul di satu dokumen tetapi jarang muncul di dokumen lain.</p>
 <blockquote>
 <p><strong>Rumus.</strong> tf-idf(t, d) = tf(t, d) × idf(t), dengan idf(t) = ln((1 + N) / (1 + df(t))) + 1</p>
-<p>tf(t, d): frekuensi kata t pada dokumen d; df(t): jumlah dokumen yang memuat t; N: jumlah dokumen. Vektor kemudian dinormalisasi L2.</p>
 </blockquote>
-<p>Setelah setiap dokumen menjadi vektor TF-IDF, kemiripan dua dokumen diukur dengan cosine similarity:</p>
+<p>Setelah dokumen menjadi vektor, kemiripannya diukur dengan cosine similarity:</p>
 <blockquote>
 <p><strong>Rumus.</strong> cos(q, d) = (q · d) / (||q|| × ||d||)</p>
-<p>q: vektor query atau profil pengguna; d: vektor item. Nilai 1 berarti searah, 0 berarti tidak memiliki komponen bersama, dan -1 berarti berlawanan arah.</p>
 </blockquote>
-<p>Sebagai contoh, query <em>Interstellar</em> memiliki deskripsi "A team of astronauts travels through a wormhole in space to find a new home for humanity." Kata <em>astronaut</em>, <em>space</em>, dan <em>wormhole</em> mendapat bobot tinggi karena relatif jarang muncul di dokumen lain. Item <em>The Martian</em> berbagi kata <em>astronaut</em> dan <em>Mars</em>, sehingga skornya tinggi. Item <em>Toy Story</em> juga berbagi kata <em>space</em> dan <em>new</em>, sehingga bisa ikut naik meskipun konteksnya berbeda. Inilah salah satu kelemahan TF-IDF: ia tidak memahami makna, hanya keberadaan kata.</p>
-<h3>2.4 Kelebihan dan keterbatasan TF-IDF</h3>
-<table>
-<thead>
-<tr>
-<th>Kelebihan</th>
-<th>Keterbatasan</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Cepat, ringan, dan tidak memerlukan pelatihan model.</td>
-<td>Tidak menangkap sinonim dan parafrasa.</td>
-</tr>
-<tr>
-<td>Mudah dijelaskan: bobot kata dapat diperiksa langsung.</td>
-<td>Gagal membedakan polisemi, misalnya "space" pada konteks berbeda.</td>
-</tr>
-<tr>
-<td>Kuat untuk pencarian kata kunci dan domain dengan istilah teknis.</td>
-<td>Tidak mempertimbangkan urutan kata dan negasi.</td>
-</tr>
-<tr>
-<td>Menjadi baseline yang baik sebelum mencoba model yang lebih mahal.</td>
-<td>Vektor renggang dan rapuh pada teks pendek.</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p><strong>Catatan.</strong> Keterbatasan TF-IDF bukan alasan untuk membuangnya. TF-IDF tetap berguna sebagai filter awal atau baseline. Namun, untuk menangkap makna, kita membutuhkan representasi yang lebih kaya: word embedding dan sentence embedding.</p>
-</blockquote>
-<div class="page-break"></div>
+<p>Nilai cosine mendekati 1 berarti dua vektor searah. Nilai 0 berarti tidak ada kemiripan.</p>
+<h3>2.3 Keterbatasan TF-IDF</h3>
+<ul>
+<li>Tidak mengenali sinonim dan parafrasa.</li>
+<li>Tidak membedakan makna kata yang sama pada konteks berbeda.</li>
+<li>Tidak mempertimbangkan urutan kata dan negasi.</li>
+<li>Vektor renggang dan kurang efektif pada teks pendek.</li>
+</ul>
+<p>Karena itu, diperlukan representasi yang lebih semantik.</p>
 <h2>3. Word Embedding</h2>
-<h3>3.1 Definisi dan hipotesis distribusional</h3>
-<p>Word embedding adalah representasi kata sebagai vektor bilangan real berdimensi tetap, misalnya 50, 100, 300, atau 384 dimensi. Berbeda dari one-hot encoding yang panjang dan renggang, word embedding bersifat padat: hampir semua elemennya bukan nol. Vektor ini dipelajari dari data teks, bukan ditentukan manual.</p>
-<p>Dasar filosofisnya adalah <strong>hipotesis distribusional</strong>: kata yang muncul dalam konteks serupa cenderung memiliki makna serupa. Firth merumuskannya secara terkenal sebagai "you shall know a word by the company it keeps". Jika "astronaut" sering muncul dekat "space", "Mars", dan "survive", maka vektornya akan berdekatan dengan kata-kata tersebut.</p>
-<pre><code class="language-text">Korpus teks  →  Konteks kata  →  Co-occurrence / prediksi  →  Vektor padat
-</code></pre>
-<h3>3.2 Word2Vec: CBOW dan Skip-gram</h3>
-<p>Word2Vec memperkenalkan dua arsitektur yang efisien untuk mempelajari word embedding dari korpus besar. <strong>CBOW</strong> (Continuous Bag of Words) memprediksi kata pusat berdasarkan kata-kata di sekitarnya. <strong>Skip-gram</strong> melakukan kebalikannya: memprediksi kata-kata konteks berdasarkan kata pusat. Skip-gram biasanya lebih baik untuk kata yang jarang muncul, sedangkan CBOW lebih cepat.</p>
-<blockquote>
-<p><strong>Rumus.</strong> Skip-gram: maksimalkan Σ log P(w_{t+j} | w_t), untuk -m ≤ j ≤ m, j ≠ 0</p>
-<p>w_t: kata pusat; w_{t+j}: kata konteks; m: ukuran jendela. Probabilitas dihitung dengan softmax, lalu didekati dengan negative sampling agar pelatihan tetap efisien pada kosakata besar.</p>
-</blockquote>
-<p>Setelah pelatihan, setiap kata memiliki vektor. Cosine similarity antara dua vektor menjadi ukuran kedekatan makna. Word2Vec juga menunjukkan bahwa operasi vektor dapat menangkap relasi analogi, misalnya <em>king − man + woman ≈ queen</em> pada model yang dilatih dengan korpus besar. Sifat ini tidak dijamin pada korpus kecil.</p>
-<h3>3.3 GloVe dan FastText</h3>
-<p><strong>GloVe</strong> (Global Vectors) menggunakan matriks co-occurrence global. Ia tidak memprediksi konteks per jendela seperti Word2Vec, tetapi memfaktorkan matriks co-occurrence dengan fungsi objektif berbobot. Rasio probabilitas co-occurrence, misalnya antara "ice" dan "steam", digunakan untuk menangkap dimensi makna seperti solid vs gas.</p>
-<p><strong>FastText</strong> memperluas Word2Vec dengan subword n-gram. Setiap kata dipecah menjadi potongan huruf, sehingga kata yang tidak pernah muncul saat pelatihan masih dapat diwakili dari subword-nya. Pendekatan ini sangat berguna untuk bahasa dengan morfologi kaya, termasuk bahasa Indonesia, dan untuk menangani kata yang salah ketik.</p>
-<h3>3.4 Word embedding statis vs kontekstual</h3>
-<p>Word2Vec, GloVe, dan FastText menghasilkan <strong>embedding statis</strong>: satu kata memiliki satu vektor, terlepas dari konteks kalimat. Model kontekstual seperti ELMo dan BERT menghasilkan vektor yang berubah sesuai kalimat. Kata "bank" pada "bank account" dan "river bank" akan memiliki vektor berbeda. Model kontekstual lebih kuat, tetapi lebih mahal secara komputasi. Pada kajian ini, istilah "word embedding" mengacu pada embedding statis, sedangkan model kontekstual dibahas sebagai jembatan menuju sentence embedding.</p>
-<h3>3.5 Contoh sederhana: PPMI + SVD</h3>
-<p>Untuk menunjukkan prinsipnya tanpa bergantung pada model besar, program demo membangun word embedding dari 12 deskripsi film. Langkahnya:</p>
+<h3>3.1 Konsep</h3>
+<p>Word embedding adalah representasi kata sebagai vektor padat. Vektor dipelajari dari konteks: kata yang sering muncul di lingkungan yang sama akan memiliki vektor berdekatan. Contohnya, <em>astronaut</em> akan dekat dengan <em>space</em>, <em>Mars</em>, dan <em>survive</em>.</p>
+<h3>3.2 Metode Populer</h3>
+<ul>
+<li><strong>Word2Vec</strong> memprediksi kata dari konteksnya (CBOW) atau konteks dari kata (Skip-gram).</li>
+<li><strong>GloVe</strong> memanfaatkan matriks co-occurrence global.</li>
+<li><strong>FastText</strong> memakai subword, sehingga lebih tahan terhadap kata baru dan salah ketik.</li>
+</ul>
+<p>Pada tugas ini, word embedding dibuat dengan cara sederhana: co-occurrence → PPMI → SVD. Tujuannya agar prosesnya mudah dijelaskan.</p>
+<h3>3.3 Contoh Sederhana</h3>
+<p>Program demo memakai 12 deskripsi film. Langkah pembuatan word embedding:</p>
 <ol>
-<li>Tokenisasi, penghapusan stopword, dan normalisasi bentuk jamak.</li>
-<li>Penghitungan co-occurrence dalam jendela dua kata.</li>
-<li>Konversi counts menjadi Positive Pointwise Mutual Information (PPMI).</li>
-<li>Reduksi dimensi dengan Truncated SVD menjadi 48 dimensi.</li>
-<li>Normalisasi L2 setiap vektor.</li>
+<li>Tokenisasi dan penghapusan stopword.</li>
+<li>Hitung co-occurrence dalam jendela dua kata.</li>
+<li>Ubah counts menjadi PPMI.</li>
+<li>Reduksi dimensi dengan SVD menjadi 48 dimensi.</li>
+<li>Normalisasi L2.</li>
 </ol>
-<p>PPMI memberi bobot tinggi pada pasangan kata yang muncul lebih sering dari yang diharapkan secara acak, dan nol pada pasangan yang muncul lebih jarang. SVD mengambil pola utama dari matriks renggang tersebut. Hasilnya adalah vektor padat yang menangkap kemiripan konteks. Pada korpus demo diperoleh 92 kata kosakata, matriks co-occurrence 92 × 92, 366 sel PPMI tak nol, dan explained variance SVD sebesar 89,20%.</p>
+<p>Hasilnya adalah 92 kata kosakata dan matriks 92 × 92. Beberapa tetangga terdekat:</p>
 <table>
 <thead>
 <tr>
-<th>Kata query</th>
+<th>Kata</th>
 <th>Tetangga terdekat (cosine)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>space</strong></td>
-<td>shuttle (0,56), destroy (0,42), ranger (0,34), orbit (0,34), travel (0,32), become (0,32), new (0,31), home (0,31)</td>
+<td>space</td>
+<td>shuttle (0,56), destroy (0,42), ranger (0,34), orbit (0,34)</td>
 </tr>
 <tr>
-<td><strong>astronaut</strong></td>
-<td>survive (0,45), fight (0,45), mars (0,43), stranded (0,43), travel (0,42), wormhole (0,41), debris (0,36), team (0,30)</td>
+<td>astronaut</td>
+<td>survive (0,45), fight (0,45), mars (0,43), stranded (0,43)</td>
 </tr>
 <tr>
-<td><strong>love</strong></td>
-<td>fall (0,67), young (0,58), test (0,38), artist (0,37), los (0,35), doomed (0,33), aspiring (0,28), war (0,25)</td>
+<td>love</td>
+<td>fall (0,67), young (0,58), test (0,38), artist (0,37)</td>
 </tr>
 <tr>
-<td><strong>crime</strong></td>
-<td>patriarch (0,75), aging (0,52), control (0,49), family (0,42), reluctant (0,36), navigate (0,20), expectation (0,20), transfer (0,18)</td>
-</tr>
-<tr>
-<td><strong>dream</strong></td>
-<td>los (0,67), sharing (0,40), plant (0,37), pursuing (0,36), angeles (0,33), steal (0,32), through (0,32), thief (0,29)</td>
-</tr>
-<tr>
-<td><strong>family</strong></td>
-<td>aging (0,66), reluctant (0,42), crime (0,42), young (0,41), expectation (0,39), transfer (0,38), navigate (0,37), romance (0,29)</td>
+<td>crime</td>
+<td>patriarch (0,75), aging (0,52), control (0,49), family (0,42)</td>
 </tr>
 </tbody>
 </table>
-<p>Tabel 1. Tetangga terdekat word embedding pada korpus demo. Skor adalah cosine similarity; nilai lebih tinggi berarti konteks pemakaian lebih mirip.</p>
-<p>Hasil ini menunjukkan pola yang masuk akal. <em>astronaut</em> berdekatan dengan <em>survive</em>, <em>Mars</em>, <em>stranded</em>, dan <em>wormhole</em>. <em>love</em> berdekatan dengan <em>fall</em>, <em>young</em>, dan <em>artist</em>. <em>crime</em> berdekatan dengan <em>patriarch</em>, <em>family</em>, dan <em>reluctant</em>. Namun, <em>space</em> juga berdekatan dengan <em>ranger</em> karena <em>Toy Story</em> memuat frasa "space ranger". Ini contoh kecil polisemi yang tidak dapat diselesaikan oleh embedding statis.</p>
-<h3>3.6 Menggunakan word embedding dalam CBF</h3>
-<p>Untuk membandingkan dokumen, vektor kata perlu digabungkan menjadi vektor dokumen. Cara paling sederhana adalah mean pooling:</p>
+<p>Tabel 1. Contoh tetangga kata pada word embedding demo.</p>
+<p>Hasil ini menunjukkan bahwa word embedding dapat menangkap kedekatan makna. Namun, kata <em>space</em> juga dekat dengan <em>ranger</em> karena <em>Toy Story</em> memuat frasa “space ranger”. Ini menunjukkan keterbatasan embedding statis yang hanya memberi satu vektor per kata.</p>
+<h3>3.4 Penggunaan dalam CBF</h3>
+<p>Vektor kata digabungkan menjadi vektor dokumen dengan mean pooling:</p>
 <blockquote>
-<p><strong>Rumus.</strong> d = (1 / |T|) × Σ_{w ∈ T} v_w</p>
-<p>T: himpunan kata dalam dokumen setelah stopword removal; v_w: vektor kata w. Vektor d kemudian dinormalisasi L2.</p>
+<p><strong>Rumus.</strong> d = (1 / |T|) × Σ v_w</p>
 </blockquote>
-<p>Alternatif yang lebih baik adalah pembobotan TF-IDF: kata yang penting diberi bobot lebih besar, kata umum diberi bobot lebih kecil. Setelah vektor dokumen terbentuk, CBF cukup menghitung cosine similarity antara vektor query dan vektor setiap item.</p>
+<p>Setelah itu, cosine similarity dihitung antara vektor query dan vektor item.</p>
 <pre><code class="language-python">def mean_sentence_vector(text, word_vectors):
     words = [w for w in tokenize(text) if w in word_vectors]
     if not words:
@@ -255,57 +135,50 @@
     vector = np.mean([word_vectors[w] for w in words], axis=0)
     return vector / np.linalg.norm(vector)
 </code></pre>
-<p>Pada demo, query <em>Interstellar</em> dan kandidat <em>The Martian</em> memiliki dot product 0,1790, norma query 0,5397, norma kandidat 0,6348, sehingga cosine similarity-nya 0,5225. Angka ini lebih tinggi daripada cosine TF-IDF untuk pasangan yang sama (0,1743), karena word embedding ikut memanfaatkan kedekatan makna kata, bukan hanya kata yang sama persis.</p>
-<h3>3.7 Kelebihan dan keterbatasan</h3>
+<p>Contoh: query <em>Interstellar</em> dan item <em>The Martian</em> memiliki cosine 0,5225. Dengan TF-IDF, pasangan yang sama hanya mendapat 0,1743. Word embedding lebih tinggi karena memanfaatkan kedekatan makna kata.</p>
+<h3>3.5 Kelebihan dan Kekurangan</h3>
 <table>
 <thead>
 <tr>
 <th>Kelebihan</th>
-<th>Keterbatasan</th>
+<th>Kekurangan</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Menangkap kemiripan makna dan variasi kata.</td>
-<td>Mean pooling menghilangkan urutan kata dan negasi.</td>
+<td>Mean pooling menghilangkan urutan kata.</td>
 </tr>
 <tr>
-<td>Vektor padat dan relatif ringan setelah dilatih.</td>
-<td>Embedding statis memberi satu vektor untuk semua makna kata.</td>
+<td>Vektor padat dan relatif ringan.</td>
+<td>Satu kata hanya punya satu vektor.</td>
 </tr>
 <tr>
-<td>Dapat digunakan untuk teks pendek dan query singkat.</td>
-<td>Kata di luar kosakata (OOV) tidak memiliki vektor.</td>
-</tr>
-<tr>
-<td>Mudah diintegrasikan ke CBF melalui mean pooling.</td>
-<td>Kualitas sangat bergantung pada korpus dan domain pelatihan.</td>
+<td>Mudah dipakai untuk teks pendek.</td>
+<td>Kata di luar kosakata tidak dikenali.</td>
 </tr>
 </tbody>
 </table>
-<div class="page-break"></div>
 <h2>4. Sentence Embedding</h2>
-<h3>4.1 Dari kata ke kalimat</h3>
-<p>Word embedding memberi representasi per kata. Namun, rekomendasi sering bekerja pada tingkat kalimat atau paragraf: sinopsis film, deskripsi produk, abstrak artikel. Jika kita hanya merata-ratakan vektor kata, kita kehilangan informasi urutan dan komposisi. Kalimat "anjing menggigit orang" dan "orang menggigit anjing" memiliki kata yang sama, tetapi maknanya berbeda. Sentence embedding bertujuan memetakan seluruh kalimat menjadi satu vektor yang mempertahankan makna tersebut.</p>
-<pre><code class="language-text">Token / kata  →  Encoder kontekstual  →  Pooling  →  Vektor kalimat
-</code></pre>
-<h3>4.2 Pendekatan sederhana</h3>
-<p>Ada beberapa cara sederhana untuk membentuk sentence embedding. <strong>Mean pooling</strong> merata-ratakan vektor kata. <strong>TF-IDF weighted mean</strong> memberi bobot lebih besar pada kata yang penting. <strong>SIF</strong> (Smooth Inverse Frequency) memberi bobot yang berbanding terbalik dengan frekuensi kata, lalu menghapus komponen utama pertama untuk mengurangi pengaruh kata umum. <strong>Doc2Vec</strong> memperlakukan dokumen sebagai vektor yang dilatih bersama kata-kata di dalamnya, dengan arsitektur PV-DM atau PV-DBOW. <strong>LSA</strong> menggunakan SVD pada matriks term-document untuk menghasilkan vektor dokumen.</p>
-<p>Pendekatan-pendekatan ini murah dan sering menjadi baseline yang kuat, tetapi belum tentu menangkap komposisi dan konteks dengan baik. Model neural seperti Universal Sentence Encoder dan Sentence-BERT dilatih khusus untuk menghasilkan vektor kalimat yang bermakna.</p>
-<h3>4.3 Sentence-BERT</h3>
-<p>BERT menghasilkan embedding kontekstual per token, tetapi vektor <code>[CLS]</code> mentah tidak selalu cocok untuk cosine similarity tanpa fine-tuning. Sentence-BERT (SBERT) mengatasi masalah ini dengan <strong>siamese network</strong>: dua kalimat dimasukkan ke encoder yang sama, lalu vektor hasil pooling dibandingkan menggunakan cosine. Model dilatih dengan pasangan kalimat dan objective contrastive/triplet, sehingga kalimat yang mirip maknanya didekatkan dan yang berbeda dijauhkan.</p>
-<blockquote>
-<p><strong>Rumus.</strong> s = cos(pooling(BERT(sentence_1)), pooling(BERT(sentence_2)))</p>
-<p>Pooling biasanya mean pooling. Vektor dinormalisasi L2, sehingga cosine sama dengan dot product. SBERT jauh lebih cepat untuk pencarian kemiripan karena vektor kalimat dapat dihitung sekali dan disimpan.</p>
-</blockquote>
-<p>Model yang digunakan pada demo adalah <code>all-MiniLM-L6-v2</code>, menghasilkan vektor 384 dimensi. Model ini kecil, cepat, dan cukup baik untuk kemiripan semantik umum. Pada data demo, seluruh 12 deskripsi film diubah menjadi vektor, lalu cosine similarity dihitung terhadap query.</p>
+<h3>4.1 Konsep</h3>
+<p>Sentence embedding memetakan satu kalimat menjadi satu vektor. Berbeda dari mean pooling, model sentence embedding mempertimbangkan konteks dan urutan kata. Salah satu model yang populer adalah Sentence-BERT (SBERT).</p>
+<h3>4.2 Mean Pooling dan Sentence-BERT</h3>
+<p>Mean pooling adalah cara paling sederhana: vektor kalimat adalah rata-rata vektor kata. Cara ini murah, tetapi belum memahami komposisi kalimat.</p>
+<p>Sentence-BERT menggunakan encoder transformer yang dilatih agar kalimat dengan makna mirip memiliki vektor mirip. Prosesnya:</p>
+<ol>
+<li>Kalimat dimasukkan ke encoder.</li>
+<li>Hasil token di-pooling menjadi satu vektor.</li>
+<li>Vektor dinormalisasi.</li>
+<li>Kemiripan dihitung dengan cosine similarity.</li>
+</ol>
+<h3>4.3 Contoh Sederhana</h3>
+<p>Pada demo, 12 deskripsi film diubah menjadi vektor 384 dimensi dengan model <code>all-MiniLM-L6-v2</code>. Hasil rekomendasi untuk query <em>Interstellar</em>:</p>
 <table>
 <thead>
 <tr>
 <th>Peringkat</th>
 <th>Item</th>
-<th>Skor SBERT</th>
-<th>Genre</th>
+<th>Skor</th>
 </tr>
 </thead>
 <tbody>
@@ -313,380 +186,150 @@
 <td>1</td>
 <td>The Martian</td>
 <td>0,4770</td>
-<td>Sci-Fi, Adventure, Drama</td>
 </tr>
 <tr>
 <td>2</td>
 <td>Gravity</td>
 <td>0,3277</td>
-<td>Sci-Fi, Thriller, Drama</td>
 </tr>
 <tr>
 <td>3</td>
 <td>Arrival</td>
 <td>0,3219</td>
-<td>Sci-Fi, Drama, Mystery</td>
 </tr>
 <tr>
 <td>4</td>
 <td>La La Land</td>
 <td>0,1371</td>
-<td>Romance, Drama, Music</td>
 </tr>
 <tr>
 <td>5</td>
 <td>Toy Story</td>
 <td>0,1088</td>
-<td>Animation, Adventure, Comedy</td>
 </tr>
 </tbody>
 </table>
 <p>Tabel 2. Rekomendasi Sentence-BERT untuk query <em>Interstellar</em>.</p>
-<p>Peringkat ini lebih koheren secara semantik daripada baseline leksikal. <em>The Martian</em> dan <em>Gravity</em> sama-sama tentang astronot dan bertahan hidup di luar angkasa. <em>Arrival</em> juga relevan karena berbicara tentang alien, bahasa, dan kontak pertama. Sebaliknya, <em>Toy Story</em> turun ke peringkat kelima meskipun deskripsinya memuat kata "space", karena model memahami bahwa "space ranger" adalah mainan, bukan perjalanan antariksa.</p>
-<h3>4.4 Menggunakan sentence embedding dalam CBF</h3>
-<p>Alur penggunaannya mirip dengan word embedding, tetapi encoder bekerja pada tingkat kalimat. Deskripsi setiap item diubah menjadi vektor dan disimpan. Profil pengguna dapat berupa rata-rata vektor item yang disukai. Skor rekomendasi dihitung dengan cosine similarity.</p>
+<p>SBERT menempatkan <em>Arrival</em> di atas <em>Toy Story</em>. <em>Arrival</em> memang tidak banyak berbagi kata dengan <em>Interstellar</em>, tetapi temanya dekat: alien, bahasa, dan kontak pertama. <em>Toy Story</em> turun karena “space ranger” adalah mainan, bukan perjalanan antariksa.</p>
+<h3>4.4 Penggunaan dalam CBF</h3>
 <pre><code class="language-python">from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer(&quot;sentence-transformers/all-MiniLM-L6-v2&quot;)
-item_vectors = model.encode(
-    descriptions,
-    normalize_embeddings=True,
-    show_progress_bar=False,
-)
-
-# user_vector: rata-rata vektor item yang disukai, sudah dinormalisasi
+item_vectors = model.encode(descriptions, normalize_embeddings=True)
 scores = item_vectors @ user_vector
 </code></pre>
-<p>Untuk katalog besar, pencarian tetangga terdekat secara brute force bisa menjadi lambat. Sistem produksi biasanya memakai approximate nearest neighbor seperti FAISS, Annoy, HNSW, atau ekstensi vektor pada basis data (misalnya pgvector). Vektor juga perlu diperbarui ketika model atau data berubah, karena embedding dari model berbeda tidak selalu sebanding.</p>
-<h3>4.5 Kelebihan dan keterbatasan</h3>
+<p>Vektor item dihitung sekali, lalu disimpan. Saat pengguna menyukai item baru, profil pengguna diperbarui dengan merata-ratakan vektor item yang disukai.</p>
+<h3>4.5 Kelebihan dan Kekurangan</h3>
 <table>
 <thead>
 <tr>
 <th>Kelebihan</th>
-<th>Keterbatasan</th>
+<th>Kekurangan</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Menangkap makna kalimat, bukan hanya kata.</td>
-<td>Model lebih besar dan lebih lambat daripada TF-IDF.</td>
+<td>Memahami makna dan konteks kalimat.</td>
+<td>Lebih berat daripada TF-IDF.</td>
 </tr>
 <tr>
-<td>Lebih tahan terhadap sinonim, parafrasa, dan urutan kata.</td>
-<td>Kurang interpretable: sulit menjelaskan dimensi tertentu.</td>
+<td>Lebih tahan terhadap parafrasa.</td>
+<td>Sulit dijelaskan secara rinci.</td>
 </tr>
 <tr>
-<td>Tersedia model multibahasa, termasuk untuk bahasa Indonesia.</td>
-<td>Kualitas turun jika domain data jauh dari data pelatihan.</td>
-</tr>
-<tr>
-<td>Cocok untuk pencarian semantik dan rekomendasi teks panjang.</td>
-<td>Dapat mewarisi bias dari korpus pelatihan.</td>
+<td>Tersedia model multibahasa.</td>
+<td>Kualitas bergantung pada domain model.</td>
 </tr>
 </tbody>
 </table>
-<div class="page-break"></div>
-<h2>5. Perbandingan dan Pembahasan</h2>
-<h3>5.1 Perbandingan konseptual</h3>
+<h2>5. Contoh dan Perbandingan</h2>
+<h3>5.1 Hasil Rekomendasi</h3>
+<p>Query: <em>Interstellar</em>. Top-3 untuk setiap metode:</p>
 <table>
 <thead>
 <tr>
-<th>Aspek</th>
-<th>TF-IDF</th>
-<th>Word Embedding + mean pooling</th>
-<th>Sentence-BERT</th>
+<th>Metode</th>
+<th>Peringkat 1</th>
+<th>Peringkat 2</th>
+<th>Peringkat 3</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Representasi</td>
-<td>Vektor renggang berbasis frekuensi kata</td>
-<td>Vektor padat; rata-rata vektor kata</td>
-<td>Vektor padat; encoder transformer + pooling</td>
-</tr>
-<tr>
-<td>Kemiripan makna</td>
-<td>Rendah; bergantung kata yang sama</td>
-<td>Sedang; menangkap kedekatan kata</td>
-<td>Tinggi; menangkap makna kalimat</td>
-</tr>
-<tr>
-<td>Urutan dan konteks</td>
-<td>Tidak dipertimbangkan</td>
-<td>Tidak dipertimbangkan</td>
-<td>Dipertimbangkan</td>
-</tr>
-<tr>
-<td>Kata baru (OOV)</td>
-<td>Diabaikan</td>
-<td>Diabaikan, kecuali model subword</td>
-<td>Umumnya ditangani tokenizer subword</td>
-</tr>
-<tr>
-<td>Pelatihan</td>
-<td>Tidak perlu</td>
-<td>Perlu korpus untuk melatih vektor</td>
-<td>Model pretrained; fine-tuning opsional</td>
-</tr>
-<tr>
-<td>Biaya inferensi</td>
-<td>Sangat rendah</td>
-<td>Rendah</td>
-<td>Lebih tinggi; perlu GPU untuk skala besar</td>
-</tr>
-<tr>
-<td>Interpretabilitas</td>
-<td>Tinggi</td>
-<td>Sedang</td>
-<td>Rendah</td>
-</tr>
-<tr>
-<td>Kebutuhan data</td>
-<td>Kecil</td>
-<td>Sedang</td>
-<td>Besar untuk pelatihan; pretrained siap pakai</td>
-</tr>
-</tbody>
-</table>
-<p>Tabel 3. Perbandingan konseptual tiga representasi teks untuk CBF.</p>
-<h3>5.2 Hasil eksperimen pada query Interstellar</h3>
-<table>
-<thead>
-<tr>
-<th>Peringkat</th>
-<th>TF-IDF</th>
-<th>Word Embedding</th>
-<th>Sentence-BERT</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
+<td>TF-IDF</td>
 <td>The Martian (0,174)</td>
-<td>The Martian (0,523)</td>
-<td>The Martian (0,477)</td>
-</tr>
-<tr>
-<td>2</td>
 <td>Gravity (0,142)</td>
-<td>Gravity (0,486)</td>
-<td>Gravity (0,328)</td>
+<td>Toy Story (0,141)</td>
 </tr>
 <tr>
-<td>3</td>
-<td>Toy Story (0,141)</td>
+<td>Word Embedding</td>
+<td>The Martian (0,523)</td>
+<td>Gravity (0,486)</td>
 <td>Toy Story (0,369)</td>
+</tr>
+<tr>
+<td>Sentence-BERT</td>
+<td>The Martian (0,477)</td>
+<td>Gravity (0,328)</td>
 <td>Arrival (0,322)</td>
 </tr>
-<tr>
-<td>4</td>
-<td>Inception (0,079)</td>
-<td>Inception (0,223)</td>
-<td>La La Land (0,137)</td>
-</tr>
-<tr>
-<td>5</td>
-<td>Titanic (0,000)</td>
-<td>La La Land (0,037)</td>
-<td>Toy Story (0,109)</td>
-</tr>
 </tbody>
 </table>
-<p>Tabel 4. Top-5 rekomendasi untuk query <em>Interstellar</em> pada tiga representasi. Skor adalah cosine similarity; skala antar-metode tidak selalu sebanding.</p>
-<p>Perbandingan skor untuk <em>The Martian</em> dan <em>Toy Story</em> memperlihatkan pola yang menarik. Pada TF-IDF, <em>The Martian</em> hanya sedikit di atas <em>Toy Story</em> (0,174 vs 0,141). Pada word embedding, jaraknya melebar (0,523 vs 0,369). Pada Sentence-BERT, <em>Toy Story</em> turun jauh (0,109) dan <em>Arrival</em> naik ke peringkat ketiga (0,322). Ini menunjukkan bahwa representasi yang lebih semantik tidak hanya mengubah skor, tetapi juga mengubah komposisi rekomendasi.</p>
-<h3>5.3 Analisis hasil</h3>
-<p>Ketiga metode sepakat pada peringkat pertama: <em>The Martian</em> adalah rekomendasi paling relevan untuk <em>Interstellar</em>. Keduanya berbagi tema astronot, luar angkasa, dan bertahan hidup. Namun, urutan berikutnya memperlihatkan perbedaan yang penting.</p>
-<p>TF-IDF menempatkan <em>Toy Story</em> di peringkat ketiga karena deskripsinya memuat kata "space" dan "new". Kata "space" memang muncul di kedua deskripsi, tetapi konteksnya berbeda: "space exploration" versus "space ranger". TF-IDF tidak memiliki cara untuk membedakannya. Word embedding dengan mean pooling juga menempatkan <em>Toy Story</em> di peringkat ketiga, meskipun skornya lebih tinggi. Rata-rata vektor kata masih membawa komponen "space", dan komponen itu bertemu dengan vektor "space" pada query. Ini menunjukkan bahwa mean pooling belum cukup untuk memahami komposisi kalimat.</p>
-<p>Sentence-BERT menempatkan <em>Arrival</em> di peringkat ketiga, bukan <em>Toy Story</em>. <em>Arrival</em> memang tidak berbagi banyak kata dengan <em>Interstellar</em>, tetapi secara semantik ia dekat: alien, bahasa, Bumi, dan upaya mencegah perang. Model memahami bahwa <em>Arrival</em> adalah fiksi ilmiah tentang kontak pertama, bukan mainan yang kebetulan memakai kata "space". <em>Toy Story</em> turun ke peringkat kelima, yang lebih masuk akal untuk pengguna yang menyukai <em>Interstellar</em>.</p>
-<h3>5.4 Kapan memakai pendekatan mana?</h3>
+<p>Tabel 3. Perbandingan top-3 rekomendasi.</p>
+<h3>5.2 Analisis Singkat</h3>
+<p>Ketiga metode sepakat bahwa <em>The Martian</em> adalah rekomendasi terbaik. Namun, TF-IDF dan word embedding menempatkan <em>Toy Story</em> di peringkat ketiga karena sama-sama memiliki kata “space”. SBERT tidak tertipu karena memahami konteks “space ranger”.</p>
+<p>Word embedding sudah lebih baik daripada TF-IDF dalam menangkap kedekatan kata, tetapi mean pooling masih kehilangan urutan dan konteks. SBERT memberi peringkat yang paling masuk akal secara semantik, dengan biaya komputasi lebih tinggi.</p>
+<h3>5.3 Kapan Menggunakan</h3>
 <table>
 <thead>
 <tr>
 <th>Kebutuhan</th>
-<th>Pilihan yang disarankan</th>
+<th>Pilihan</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Baseline cepat, data kecil, harus mudah dijelaskan</td>
-<td>TF-IDF + cosine; tambahkan metadata genre.</td>
+<td>Baseline cepat dan mudah dijelaskan</td>
+<td>TF-IDF</td>
 </tr>
 <tr>
-<td>Butuh generalisasi makna kata dengan biaya rendah</td>
-<td>Word embedding pretrained + mean pooling atau TF-IDF weighted mean.</td>
+<td>Kemiripan makna kata dengan biaya rendah</td>
+<td>Word embedding</td>
 </tr>
 <tr>
-<td>Kualitas semantik tinggi, teks panjang, sumber daya memadai</td>
-<td>Sentence embedding (Sentence-BERT atau model multibahasa).</td>
+<td>Kualitas semantik yang lebih tinggi</td>
+<td>Sentence-BERT</td>
 </tr>
 <tr>
-<td>Produksi dengan batasan kata kunci dan latensi</td>
-<td>Hybrid: filter leksikal + skor semantik + learning-to-rank.</td>
+<td>Sistem produksi</td>
+<td>Gabungkan filter kata kunci dan skor semantik</td>
 </tr>
 </tbody>
 </table>
-<p>Tabel 5. Panduan praktis pemilihan representasi.</p>
-<p>Pada praktiknya, pilihan tidak harus tunggal. Sistem produksi sering menggabungkan beberapa sinyal: genre, popularitas, kata kunci, dan skor semantik. Hybrid ranking dapat menutup kelemahan masing-masing metode. Misalnya, TF-IDF atau filter metadata memastikan kecocokan kata kunci yang wajib, sedangkan sentence embedding menangani parafrasa dan sinonim.</p>
-<h3>5.5 Evaluasi</h3>
-<p>Demo ini hanya menunjukkan peringkat secara kualitatif. Sistem nyata perlu dievaluasi dengan metrik kuantitatif. Untuk evaluasi offline, metrik yang umum adalah Precision@k, Recall@k, F1@k, Mean Average Precision (MAP), Mean Reciprocal Rank (MRR), dan Normalized Discounted Cumulative Gain (NDCG). Untuk evaluasi online, dapat digunakan click-through rate, conversion rate, dwell time, dan survei kepuasan pengguna. Evaluasi juga perlu memperhatikan keragaman (diversity), kebaruan (novelty), dan keadilan (fairness), bukan hanya relevansi.</p>
-<p>Ground truth untuk CBF tidak selalu tersedia. Salah satu pendekatan adalah menyusun data uji dengan item yang benar-benar disukai pengguna, lalu mengukur apakah item tersebut muncul di top-k. Pendekatan lain adalah human evaluation: responden menilai relevansi rekomendasi. Untuk tugas kuliah ini, evaluasi kualitatif pada contoh terbatas sudah cukup untuk menunjukkan perbedaan perilaku ketiga representasi.</p>
-<h3>5.6 Tantangan dan keterbatasan</h3>
-<ul>
-<li><strong>Cold start pengguna.</strong> CBF tetap kesulitan jika pengguna belum memiliki item yang disukai.</li>
-<li><strong>Over-specialization.</strong> Rekomendasi bisa terlalu sempit dan mengurangi keragaman.</li>
-<li><strong>Filter bubble.</strong> Pengguna terus menerima item yang mirip dengan preferensi lama.</li>
-<li><strong>Bias dan keadilan.</strong> Embedding dapat mewarisi bias gender, ras, atau budaya dari korpus.</li>
-<li><strong>Domain shift.</strong> Model yang dilatih pada berita belum tentu cocok untuk sinopsis film atau produk.</li>
-<li><strong>Biaya dan latensi.</strong> Sentence embedding membutuhkan lebih banyak sumber daya daripada TF-IDF.</li>
-<li><strong>Explainability.</strong> Sulit menjelaskan mengapa dua vektor dianggap mirip tanpa alat tambahan.</li>
-</ul>
-<p>Keterbatasan eksperimen ini juga perlu dicatat: data hanya 12 film, semuanya berbahasa Inggris, tanpa data interaksi pengguna, dan word embedding dilatih dari korpus yang sangat kecil. Hasilnya tidak dapat digeneralisasi ke produksi. Meskipun demikian, contoh ini cukup untuk memperlihatkan perbedaan konsep dan perilaku ketiga representasi.</p>
-<div class="page-break"></div>
 <h2>6. Kesimpulan</h2>
-<p>Content-based filtering merekomendasikan item berdasarkan kemiripan antara profil pengguna dan fitur item. Pada domain teks, kualitas CBF sangat ditentukan oleh representasi yang dipakai. TF-IDF tetap menjadi baseline yang cepat, murah, dan mudah dijelaskan, tetapi hanya memahami kata yang sama persis. Ia tidak menangkap sinonim, parafrasa, atau perbedaan konteks.</p>
-<p>Word embedding menjawab sebagian keterbatasan tersebut. Dengan memetakan kata ke vektor padat berdasarkan konteks, word embedding membuat kata-kata yang bermakna dekat memiliki vektor yang berdekatan. Pada demo, <em>astronaut</em> berdekatan dengan <em>survive</em>, <em>Mars</em>, dan <em>stranded</em>; <em>love</em> berdekatan dengan <em>fall</em> dan <em>young</em>. Namun, karena setiap kata hanya memiliki satu vektor, embedding statis belum mampu membedakan "space exploration" dari "space ranger". Mean pooling juga menghilangkan urutan dan komposisi kalimat.</p>
-<p>Sentence embedding melangkah lebih jauh. Dengan encoder seperti Sentence-BERT, seluruh kalimat dipetakan menjadi satu vektor yang mempertimbangkan konteks. Pada demo, Sentence-BERT menghasilkan peringkat yang lebih koheren: <em>The Martian</em>, <em>Gravity</em>, dan <em>Arrival</em> berada di atas <em>Toy Story</em>, meskipun <em>Toy Story</em> berbagi kata "space". Ini menunjukkan bahwa representasi tingkat kalimat lebih baik dalam menangkap makna, dengan konsekuensi biaya komputasi yang lebih tinggi.</p>
-<p>Dengan demikian, tidak ada satu pendekatan yang selalu terbaik. Pilihan bergantung pada kebutuhan: TF-IDF untuk baseline dan interpretabilitas, word embedding untuk semantic generalization yang ringan, sentence embedding untuk kualitas semantik yang tinggi, dan hybrid ranking untuk produksi. Penelitian lanjutan dapat menguji pendekatan ini pada dataset berbahasa Indonesia yang lebih besar, menambahkan evaluasi pengguna, serta membandingkan model multibahasa dan model yang di-fine-tune pada domain tertentu.</p>
+<p>Content-based filtering merekomendasikan item berdasarkan kemiripan fitur. TF-IDF cepat dan mudah dijelaskan, tetapi hanya memahami kata yang sama. Word embedding menambahkan pemahaman makna kata, sedangkan sentence embedding memahami makna kalimat secara lebih utuh.</p>
+<p>Pada contoh 12 film, semua metode memilih <em>The Martian</em> untuk query <em>Interstellar</em>. Perbedaannya terlihat pada peringkat berikutnya: TF-IDF dan word embedding masih terpengaruh kata “space” pada <em>Toy Story</em>, sedangkan Sentence-BERT memilih <em>Arrival</em> karena kedekatan makna.</p>
+<p>Untuk tugas sederhana, TF-IDF atau word embedding sudah cukup. Jika kualitas semantik lebih penting dan sumber daya tersedia, Sentence-BERT adalah pilihan yang lebih baik.</p>
 <div class="page-break"></div>
-<h2>Referensi</h2>
-<ol>
-<li>Ricci, F., Rokach, L., &amp; Shapira, B. (Eds.). (2015). <em>Recommender Systems Handbook</em> (2nd ed.). Springer. https://doi.org/10.1007/978-1-4899-7637-6</li>
-<li>Jurafsky, D., &amp; Martin, J. H. (2024). <em>Speech and Language Processing</em> (3rd ed. draft). Stanford University. https://web.stanford.edu/~jurafsky/slp3/</li>
-<li>Mikolov, T., Chen, K., Corrado, G., &amp; Dean, J. (2013). Efficient Estimation of Word Representations in Vector Space. <em>arXiv:1301.3781</em>. https://arxiv.org/abs/1301.3781</li>
-<li>Mikolov, T., Sutskever, I., Chen, K., Corrado, G., &amp; Dean, J. (2013). Distributed Representations of Words and Phrases and their Compositionality. <em>Advances in Neural Information Processing Systems</em>, 26.</li>
-<li>Pennington, J., Socher, R., &amp; Manning, C. D. (2014). GloVe: Global Vectors for Word Representation. <em>Proceedings of EMNLP 2014</em>, 1532–1543. https://doi.org/10.3115/v1/D14-1162</li>
-<li>Bojanowski, P., Grave, E., Joulin, A., &amp; Mikolov, T. (2017). Enriching Word Vectors with Subword Information. <em>Transactions of the Association for Computational Linguistics</em>, 5, 135–146.</li>
-<li>Le, Q. V., &amp; Mikolov, T. (2014). Distributed Representations of Sentences and Documents. <em>Proceedings of ICML 2014</em>, 1188–1196.</li>
-<li>Arora, S., Liang, Y., &amp; Ma, T. (2017). A Simple but Tough-to-Beat Baseline for Sentence Embeddings. <em>International Conference on Learning Representations</em>.</li>
-<li>Reimers, N., &amp; Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. <em>Proceedings of EMNLP-IJCNLP 2019</em>, 3982–3992. https://doi.org/10.18653/v1/D19-1410</li>
-<li>Devlin, J., Chang, M.-W., Lee, K., &amp; Toutanova, K. (2019). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. <em>Proceedings of NAACL-HLT 2019</em>, 4171–4186.</li>
-<li>Cer, D., Yang, Y., Kong, S.-Y., Hua, N., Limtiaco, N., St. John, R., et al. (2018). Universal Sentence Encoder. <em>arXiv:1803.11175</em>. https://arxiv.org/abs/1803.11175</li>
-<li>Manning, C. D., Raghavan, P., &amp; Schütze, H. (2008). <em>Introduction to Information Retrieval</em>. Cambridge University Press.</li>
-<li>Levy, O., &amp; Goldberg, Y. (2014). Neural Word Embedding as Implicit Matrix Factorization. <em>Advances in Neural Information Processing Systems</em>, 27.</li>
-<li>Levy, O., Goldberg, Y., &amp; Dagan, I. (2015). Improving Distributional Similarity with Lessons Learned from Word Embeddings. <em>Transactions of the Association for Computational Linguistics</em>, 3, 211–225.</li>
-<li>Goldberg, Y., &amp; Levy, O. (2014). word2vec Explained: Deriving Mikolov et al.'s Negative-Sampling Word-Embedding Method. <em>arXiv:1402.3722</em>. https://arxiv.org/abs/1402.3722</li>
-<li>Koren, Y., Bell, R., &amp; Volinsky, C. (2009). Matrix Factorization Techniques for Recommender Systems. <em>Computer</em>, 42(8), 30–37.</li>
-<li>Kunaver, M., &amp; Požrl, T. (2017). Diversity in Recommender Systems: A Survey. <em>Knowledge-Based Systems</em>, 123, 154–162.</li>
-<li>Sahlgren, M. (2005). An Introduction to Random Indexing. <em>Proceedings of the Methods and Applications of Semantic Indexing Workshop</em>.</li>
-</ol>
-<div class="page-break"></div>
-<h2>Lampiran A: Struktur dan Cara Menjalankan Program</h2>
-<p>Program pendukung berada di folder <code>program/</code> pada repositori. Struktur utamanya:</p>
-<pre><code class="language-text">content-based-filtering/
-├── index.html                 halaman demo interaktif
-├── report.html                sumber laporan
-├── report.pdf                 laporan siap kumpul
-├── assets/
-│   ├── app.js                 logika demo
-│   ├── demo-data.js           data hasil program
-│   ├── demo-data.json         data mentah
-│   ├── style.css              tampilan demo
-│   └── report.css             tampilan laporan
-└── program/
-    ├── cbf_embeddings.py      program utama
-    ├── requirements.txt       dependensi
-    ├── output.txt             output eksekusi
-    └── README.txt             panduan singkat
-</code></pre>
-<h3>A.1 Menjalankan program</h3>
-<p>Program membutuhkan Python 3 dan paket <code>numpy</code> serta <code>scikit-learn</code>. Untuk perbandingan Sentence-BERT, diperlukan paket <code>sentence-transformers</code>. Jika paket tersebut tidak tersedia, program tetap berjalan dengan TF-IDF dan mean pooling.</p>
+<h2>Lampiran: Program</h2>
+<p>Program demo ada di folder <code>program/</code>. Untuk menjalankan:</p>
 <pre><code class="language-bash">pip install numpy scikit-learn
-pip install sentence-transformers   # opsional, untuk SBERT
-
 python3 cbf_embeddings.py
 </code></pre>
-<p>Program akan menulis ringkasan ke terminal dan ke <code>output.txt</code>, serta menghasilkan <code>assets/demo-data.json</code> dan <code>assets/demo-data.js</code> untuk halaman demo. Halaman demo dapat dibuka langsung dari <code>index.html</code> atau melalui GitHub Pages.</p>
-<h3>A.2 Fungsi utama</h3>
-<table>
-<thead>
-<tr>
-<th>Fungsi</th>
-<th>Peran</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>tokenize()</code></td>
-<td>Tokenisasi, stopword removal, normalisasi bentuk jamak.</td>
-</tr>
-<tr>
-<td><code>build_word_vectors()</code></td>
-<td>Co-occurrence, PPMI, SVD, normalisasi L2.</td>
-</tr>
-<tr>
-<td><code>mean_sentence_vector()</code></td>
-<td>Mean pooling vektor kata menjadi vektor kalimat.</td>
-</tr>
-<tr>
-<td><code>tfidf_vectors()</code></td>
-<td>Baseline TF-IDF dengan normalisasi L2.</td>
-</tr>
-<tr>
-<td><code>sbert_vectors()</code></td>
-<td>Sentence embedding dengan Sentence-BERT, opsional.</td>
-</tr>
-<tr>
-<td><code>rank_items()</code></td>
-<td>Peringkat item berdasarkan cosine similarity.</td>
-</tr>
-<tr>
-<td><code>cosine_breakdown()</code></td>
-<td>Rincian dot product, norma, dan cosine.</td>
-</tr>
-</tbody>
-</table>
-<p>Tabel 6. Fungsi utama pada <code>cbf_embeddings.py</code>.</p>
-<h3>A.3 Catatan reproduksibilitas</h3>
-<p>Hasil dapat berbeda sedikit jika versi <code>scikit-learn</code>, <code>sentence-transformers</code>, atau model berubah. Untuk hasil yang persis sama dengan laporan, gunakan data dan model yang sama (<code>all-MiniLM-L6-v2</code>) serta jalankan program pada lingkungan Python 3.12. Program menggunakan <code>random_state=42</code> pada SVD.</p>
-<div class="page-break"></div>
-<h2>Lampiran B: Ringkasan Output Program</h2>
-<p>Berikut ringkasan output <code>cbf_embeddings.py</code> pada data demo. Output lengkap tersedia di <code>program/output.txt</code>.</p>
-<pre><code class="language-text">CONTENT-BASED FILTERING DENGAN WORD &amp; SENTENCE EMBEDDING
-Jumlah item            : 12 film
-Jumlah kata deskripsi  : 112 token
-
-[1] WORD EMBEDDING: co-occurrence -&gt; PPMI -&gt; SVD
-    Ukuran kosakata        : 92
-    Matriks co-occurrence  : 92 x 92
-    Dimensi vektor         : 48
-    Explained variance SVD : 89.20%
-    Sel PPMI tak nol       : 366
-
-    Tetangga terdekat:
-      space      -&gt; shuttle (0.56), destroy (0.42), ranger (0.34), orbit (0.34)
-      astronaut  -&gt; survive (0.45), fight (0.45), mars (0.43), stranded (0.43)
-      love       -&gt; fall (0.67), young (0.58), test (0.38), artist (0.37)
-      crime      -&gt; patriarch (0.75), aging (0.52), control (0.49), family (0.42)
-
-[2] SENTENCE EMBEDDING
-    Mean pooling           : rata-rata vektor kata, lalu normalisasi L2
-    TF-IDF baseline        : 92 dimensi kosakata
-    Sentence-BERT          : all-MiniLM-L6-v2 (384 dimensi)
-
-[3] REKOMENDASI UNTUK QUERY: Interstellar
-    TF-IDF
-      1. The Martian          0.1743
-      2. Gravity              0.1417
-      3. Toy Story            0.1414
-    Word Embedding + Mean Pooling
-      1. The Martian          0.5225
-      2. Gravity              0.4860
-      3. Toy Story            0.3690
-    Sentence-BERT
-      1. The Martian          0.4770
-      2. Gravity              0.3277
-      3. Arrival              0.3219
-
-[4] CONTOH PERHITUNGAN COSINE (Word Embedding + Mean Pooling)
-    Pasangan: Interstellar vs The Martian
-    dot(q, d)      = 0.1790
-    ||q||          = 0.5397
-    ||d||          = 0.6348
-    cosine         = 0.5225
+<p>Untuk membandingkan dengan Sentence-BERT:</p>
+<pre><code class="language-bash">pip install sentence-transformers
 </code></pre>
-<p>Output di atas diringkas; angka dapat berubah sedikit jika lingkungan atau model berbeda. File lengkap tetap disertakan dalam repositori.</p>
-<blockquote>
-<p><strong>Akses demo.</strong> Halaman interaktif: https://najibrobbani74.github.io/college-task/content-based-filtering/. Laporan PDF, kode Python, dan data demo tersedia di halaman yang sama.</p>
-</blockquote>
+<p>Program akan menghasilkan <code>assets/demo-data.json</code>, <code>assets/demo-data.js</code>, dan <code>output.txt</code>. Ringkasan output:</p>
+<pre><code class="language-text">Jumlah item            : 12 film
+Kosakata               : 92 kata
+Dimensi word embedding : 48
+Model Sentence-BERT    : all-MiniLM-L6-v2 (384 dimensi)
+
+Query: Interstellar
+TF-IDF         : The Martian 0.1743, Gravity 0.1417, Toy Story 0.1414
+Word Embedding : The Martian 0.5225, Gravity 0.4860, Toy Story 0.3690
+Sentence-BERT  : The Martian 0.4770, Gravity 0.3277, Arrival 0.3219
+</code></pre>
+<p>Demo interaktif: https://najibrobbani74.github.io/college-task/content-based-filtering/</p>
 </body>
 </html>
