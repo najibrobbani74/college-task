@@ -1,0 +1,575 @@
+@page {
+  size: A4;
+  margin: 19mm 18mm 17mm 18mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  color: #1f2937;
+  background: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10.5pt;
+  line-height: 1.58;
+  text-align: justify;
+  hyphens: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+.cover-title,
+.cover-kicker,
+.eyebrow,
+th,
+.flow-step b,
+.caption,
+.toc-title,
+.small-label {
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-size: 20pt;
+  line-height: 1.18;
+  color: #0b3b3b;
+  margin: 0 0 0.6rem;
+  letter-spacing: -0.02em;
+  page-break-after: avoid;
+}
+
+h2 {
+  font-size: 14.5pt;
+  line-height: 1.25;
+  color: #0b3b3b;
+  margin: 1.5rem 0 0.55rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid #cfe0dc;
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: 11.5pt;
+  line-height: 1.3;
+  color: #134e4a;
+  margin: 1.1rem 0 0.35rem;
+  page-break-after: avoid;
+}
+
+h4 {
+  font-size: 10.5pt;
+  margin: 0.9rem 0 0.25rem;
+  color: #134e4a;
+  page-break-after: avoid;
+}
+
+p {
+  margin: 0 0 0.55rem;
+  orphans: 3;
+  widows: 3;
+}
+
+ul,
+ol {
+  margin: 0.25rem 0 0.7rem 1.1rem;
+  padding: 0;
+}
+
+li {
+  margin: 0.18rem 0;
+}
+
+a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+strong {
+  color: #111827;
+}
+
+em {
+  font-style: italic;
+}
+
+.small {
+  font-size: 9pt;
+}
+
+.muted {
+  color: #5b6577;
+}
+
+.center {
+  text-align: center;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+.avoid-break {
+  page-break-inside: avoid;
+}
+
+/* --------------------------------------------------------------------------
+   Cover
+   -------------------------------------------------------------------------- */
+
+.cover {
+  min-height: 245mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  page-break-after: always;
+}
+
+.cover-top {
+  padding-top: 12mm;
+}
+
+.cover-rule {
+  width: 58mm;
+  height: 5px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #0f766e, #2563eb);
+  margin: 0 0 8mm;
+}
+
+.cover-kicker {
+  color: #0f766e;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 4mm;
+}
+
+.cover-title {
+  color: #0b3b3b;
+  font-size: 27pt;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  margin: 0 0 5mm;
+  max-width: 165mm;
+}
+
+.cover-subtitle {
+  color: #475569;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13pt;
+  line-height: 1.45;
+  max-width: 150mm;
+  margin: 0;
+  text-align: left;
+}
+
+.cover-illustration {
+  margin: 8mm 0;
+  padding: 6mm;
+  border: 1px solid #d7e3ea;
+  border-radius: 5mm;
+  background: linear-gradient(145deg, #f5fbfa, #eef4ff);
+}
+
+.cover-illustration svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cover-meta {
+  border-top: 1px solid #d7e3ea;
+  padding-top: 5mm;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2mm 8mm;
+  font-size: 10pt;
+  text-align: left;
+}
+
+.cover-meta span {
+  color: #64748b;
+  display: block;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cover-meta b {
+  color: #1f2937;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Abstract and TOC
+   -------------------------------------------------------------------------- */
+
+.abstract {
+  background: #f6fbfa;
+  border: 1px solid #d5e8e4;
+  border-radius: 3mm;
+  padding: 5mm 6mm;
+  margin: 0 0 6mm;
+}
+
+.abstract h2 {
+  margin-top: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+  font-size: 12pt;
+}
+
+.keywords {
+  margin-top: 0.6rem;
+  font-size: 9.5pt;
+}
+
+.toc {
+  margin-top: 0.5rem;
+}
+
+.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.28rem 0;
+  font-size: 10pt;
+}
+
+.toc li::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px dotted #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.toc .toc-sub {
+  margin-left: 1.2rem;
+  font-size: 9.2pt;
+  color: #475569;
+}
+
+.toc .toc-num {
+  color: #0f766e;
+  font-weight: 700;
+  min-width: 2.2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Figures and flows
+   -------------------------------------------------------------------------- */
+
+.figure {
+  margin: 0.9rem 0 1rem;
+  page-break-inside: avoid;
+  text-align: center;
+}
+
+.figure svg {
+  display: block;
+  width: 100%;
+  max-width: 165mm;
+  height: auto;
+  margin: 0 auto;
+}
+
+.caption {
+  font-size: 8.5pt;
+  color: #475569;
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+.flow {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.25rem;
+  margin: 0.8rem 0;
+  page-break-inside: avoid;
+}
+
+.flow-step {
+  flex: 1;
+  border: 1px solid #cfe0dc;
+  border-radius: 2.5mm;
+  background: #f8fcfb;
+  padding: 0.45rem 0.4rem;
+  text-align: center;
+  font-size: 8.2pt;
+  line-height: 1.35;
+}
+
+.flow-step b {
+  display: block;
+  color: #0f766e;
+  font-size: 8pt;
+  margin-bottom: 0.15rem;
+}
+
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  color: #0f766e;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 12pt;
+  font-weight: 700;
+  padding: 0 0.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.55rem 0 0.85rem;
+  font-size: 9pt;
+  line-height: 1.4;
+  page-break-inside: avoid;
+}
+
+th {
+  background: #e8f3f0;
+  color: #0b3b3b;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid #b9d6cf;
+  vertical-align: bottom;
+}
+
+td {
+  padding: 0.32rem 0.4rem;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+table.compact {
+  font-size: 8.5pt;
+}
+
+table.compact td,
+table.compact th {
+  padding: 0.26rem 0.35rem;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.table-note {
+  font-size: 8.3pt;
+  color: #5b6577;
+  margin: -0.5rem 0 0.8rem;
+}
+
+/* --------------------------------------------------------------------------
+   Formula, code, notes
+   -------------------------------------------------------------------------- */
+
+.formula {
+  background: #f8fafc;
+  border-left: 3px solid #0f766e;
+  border-radius: 0 2mm 2mm 0;
+  padding: 0.55rem 0.75rem;
+  margin: 0.65rem 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10.5pt;
+  text-align: center;
+  page-break-inside: avoid;
+}
+
+.formula .where {
+  display: block;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 8.2pt;
+  color: #5b6577;
+  text-align: left;
+  margin-top: 0.3rem;
+}
+
+blockquote {
+  background: #f8fafc;
+  border-left: 3px solid #0f766e;
+  border-radius: 0 2mm 2mm 0;
+  padding: 0.55rem 0.75rem;
+  margin: 0.65rem 0;
+  font-size: 9.6pt;
+  page-break-inside: avoid;
+}
+
+blockquote p {
+  margin: 0 0 0.35rem;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+pre {
+  background: #f6f8fa;
+  border: 1px solid #d8dee4;
+  border-radius: 2mm;
+  padding: 0.55rem 0.65rem;
+  margin: 0.55rem 0 0.8rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 7.8pt;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  page-break-inside: avoid;
+  text-align: left;
+}
+
+code {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8.5pt;
+  background: #f1f5f9;
+  border-radius: 1mm;
+  padding: 0.02rem 0.2rem;
+}
+
+.note {
+  background: #fffbeb;
+  border-left: 3px solid #b45309;
+  border-radius: 0 2mm 2mm 0;
+  padding: 0.5rem 0.65rem;
+  margin: 0.65rem 0;
+  font-size: 9pt;
+  page-break-inside: avoid;
+}
+
+.note.green {
+  background: #f0fdfa;
+  border-left-color: #0f766e;
+}
+
+.note.blue {
+  background: #eff6ff;
+  border-left-color: #2563eb;
+}
+
+/* --------------------------------------------------------------------------
+   Bar chart
+   -------------------------------------------------------------------------- */
+
+.bars {
+  margin: 0.6rem 0 0.9rem;
+  page-break-inside: avoid;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 42mm 1fr 14mm;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0.22rem 0;
+  font-size: 8.6pt;
+}
+
+.bar-label {
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: right;
+}
+
+.bar-track {
+  height: 5mm;
+  border-radius: 999px;
+  background: #eef2f7;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: calc(var(--w) * 100%);
+  border-radius: inherit;
+  background: #0f766e;
+}
+
+.bar-fill.blue {
+  background: #2563eb;
+}
+
+.bar-fill.slate {
+  background: #64748b;
+}
+
+.bar-value {
+  font-variant-numeric: tabular-nums;
+  color: #475569;
+  font-size: 8.4pt;
+}
+
+/* --------------------------------------------------------------------------
+   References and appendix
+   -------------------------------------------------------------------------- */
+
+.refs {
+  margin: 0.5rem 0 0;
+  padding-left: 1.3rem;
+  font-size: 9pt;
+}
+
+.refs li {
+  margin: 0.35rem 0;
+  text-align: left;
+}
+
+.appendix-output {
+  font-size: 7.2pt;
+  line-height: 1.35;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  page-break-inside: avoid;
+}
+
+.info-card {
+  border: 1px solid #d7e3ea;
+  border-radius: 2.5mm;
+  padding: 0.55rem 0.7rem;
+  background: #fbfdfd;
+  font-size: 9pt;
+}
+
+.info-card h3 {
+  margin-top: 0;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 1rem 0;
+}

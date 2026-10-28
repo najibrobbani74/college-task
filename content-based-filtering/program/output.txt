@@ -1,0 +1,64 @@
+==============================================================================
+CONTENT-BASED FILTERING DENGAN WORD & SENTENCE EMBEDDING
+==============================================================================
+Jumlah item            : 12 film
+Jumlah kata deskripsi  : 112 token
+
+[1] WORD EMBEDDING: co-occurrence -> PPMI -> SVD
+    Ukuran kosakata        : 92
+    Matriks co-occurrence  : 92 x 92
+    Dimensi vektor         : 48
+    Explained variance SVD : 89.20%
+    Sel PPMI tak nol       : 366
+
+    Tetangga terdekat (cosine) untuk beberapa kata:
+      space      -> shuttle (0.56), destroy (0.42), ranger (0.34), orbit (0.34), travel (0.32), become (0.32), new (0.31), home (0.31)
+      astronaut  -> survive (0.45), fight (0.45), mars (0.43), stranded (0.43), travel (0.42), wormhole (0.41), debris (0.36), team (0.30)
+      love       -> fall (0.67), young (0.58), test (0.38), artist (0.37), los (0.35), doomed (0.33), aspiring (0.28), war (0.25)
+      crime      -> patriarch (0.75), aging (0.52), control (0.49), family (0.42), reluctant (0.36), navigate (0.20), expectation (0.20), transfer (0.18)
+      dream      -> los (0.67), sharing (0.40), plant (0.37), pursuing (0.36), angeles (0.33), steal (0.32), through (0.32), thief (0.29)
+      family     -> aging (0.66), reluctant (0.42), crime (0.42), young (0.41), expectation (0.39), transfer (0.38), navigate (0.37), romance (0.29)
+
+[2] SENTENCE EMBEDDING
+    Mean pooling           : rata-rata vektor kata, lalu normalisasi L2
+    TF-IDF baseline        : 92 dimensi kosakata
+    Sentence-BERT          : sentence-transformers/all-MiniLM-L6-v2 (384 dimensi)
+
+[3] REKOMENDASI UNTUK QUERY: Interstellar
+    Query: "A team of astronauts travels through a wormhole in space to find a new home for humanity."
+
+  TF-IDF (leksikal)
+    1. The Martian          0.1743  (Sci-Fi, Adventure, Drama)
+    2. Gravity              0.1417  (Sci-Fi, Thriller, Drama)
+    3. Toy Story            0.1414  (Animation, Adventure, Comedy)
+    4. Inception            0.0788  (Sci-Fi, Action, Thriller)
+    5. Titanic              0.0000  (Romance, Drama)
+
+  Word Embedding + Mean Pooling
+    1. The Martian          0.5225  (Sci-Fi, Adventure, Drama)
+    2. Gravity              0.4860  (Sci-Fi, Thriller, Drama)
+    3. Toy Story            0.3690  (Animation, Adventure, Comedy)
+    4. Inception            0.2227  (Sci-Fi, Action, Thriller)
+    5. La La Land           0.0368  (Romance, Drama, Music)
+
+  Sentence-BERT (semantik)
+    1. The Martian          0.4770  (Sci-Fi, Adventure, Drama)
+    2. Gravity              0.3277  (Sci-Fi, Thriller, Drama)
+    3. Arrival              0.3219  (Sci-Fi, Drama, Mystery)
+    4. La La Land           0.1371  (Romance, Drama, Music)
+    5. Toy Story            0.1088  (Animation, Adventure, Comedy)
+
+[4] CONTOH PERHITUNGAN COSINE (Word Embedding + Mean Pooling)
+    Pasangan: Interstellar vs The Martian
+    dot(q, d)      = 0.522545
+    ||q||          = 1.000000
+    ||d||          = 1.000000
+    cosine         = 0.522545
+
+[5] FILE YANG DIHASILKAN
+    /mnt/A29EE2F79EE2C341/Programs/code/project/gntrees/gntress-os/.college-task/content-based-filtering/assets/demo-data.json
+    /mnt/A29EE2F79EE2C341/Programs/code/project/gntrees/gntress-os/.college-task/content-based-filtering/assets/demo-data.js
+    /mnt/A29EE2F79EE2C341/Programs/code/project/gntrees/gntress-os/.college-task/content-based-filtering/program/output.txt
+
+Selesai. Buka ../index.html untuk melihat demonstrasi interaktif.
+==============================================================================

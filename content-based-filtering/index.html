@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Demo interaktif content-based filtering dengan Word Embedding dan Sentence Embedding, disertai laporan kajian."
+    />
+    <title>Content-Based Filtering · Word & Sentence Embedding</title>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script src="assets/demo-data.js" defer></script>
+    <script src="assets/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="../index.html">
+          <span class="brand-mark">CT</span>
+          <span>College Task</span>
+        </a>
+        <nav class="nav-links" aria-label="Navigasi utama">
+          <a href="../index.html">Beranda</a>
+          <a href="report.pdf">Laporan PDF</a>
+          <a href="program/cbf_embeddings.py">Kode Python</a>
+          <a href="https://github.com/najibrobbani74/college-task" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <span class="eyebrow">Kajian + Demo Interaktif</span>
+            <h1>Content-Based Filtering dengan Word &amp; Sentence Embedding</h1>
+            <p>
+              Bagaimana sistem merekomendasikan film dari deskripsinya? Halaman ini
+              membandingkan tiga representasi teks: <strong>TF-IDF</strong> sebagai baseline
+              leksikal, <strong>Word Embedding</strong> untuk menangkap kedekatan makna kata,
+              dan <strong>Sentence Embedding</strong> untuk memahami makna satu kalimat utuh.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="report.pdf">Buka laporan PDF</a>
+              <a class="button button-secondary" href="#demo">Coba demo</a>
+            </div>
+            <div class="badge-row">
+              <span class="badge badge-green">12 film</span>
+              <span class="badge badge-green">92 kata kosakata</span>
+              <span class="badge badge-blue">PPMI + SVD</span>
+              <span class="badge badge-blue">Sentence-BERT</span>
+              <span class="badge">Cosine similarity</span>
+            </div>
+          </div>
+
+          <aside class="hero-card" aria-label="Alur content-based filtering">
+            <div class="hero-card-label">Alur singkat</div>
+            <h3>Dari deskripsi item ke rekomendasi</h3>
+            <p>
+              Setiap item dan query diubah menjadi vektor. Rekomendasi adalah item
+              dengan sudut vektor paling kecil terhadap query.
+            </p>
+            <div class="mini-flow">
+              <div class="mini-step"><b>1</b> Item profile: deskripsi film</div>
+              <div class="mini-step"><b>2</b> Encoding: TF-IDF / Word / Sentence</div>
+              <div class="mini-step"><b>3</b> Cosine similarity(query, item)</div>
+              <div class="mini-step"><b>4</b> Ranking skor tertinggi</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="konsep">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">01 · Konsep</span>
+              <h2>Content-based filtering dalam satu paragraf</h2>
+              <p>
+                Content-based filtering (CBF) merekomendasikan item yang mirip dengan
+                item yang disukai pengguna, berdasarkan fitur item itu sendiri. Karena
+                tidak membutuhkan data pengguna lain, CBF relatif kuat pada item baru
+                (item cold start), tetapi sangat bergantung pada kualitas representasi
+                fitur.
+              </p>
+            </div>
+          </div>
+
+          <div class="pipeline" aria-label="Pipeline content-based filtering">
+            <div class="pipeline-step">
+              <span>1</span>
+              <h3>Item profile</h3>
+              <p>Judul, genre, dan deskripsi film diubah menjadi teks yang terstruktur.</p>
+            </div>
+            <div class="pipeline-step">
+              <span>2</span>
+              <h3>Representasi</h3>
+              <p>TF-IDF, vektor kata, atau vektor kalimat menghasilkan vektor numerik.</p>
+            </div>
+            <div class="pipeline-step">
+              <span>3</span>
+              <h3>Similarity</h3>
+              <p>Cosine similarity mengukur seberapa searah vektor query dan item.</p>
+            </div>
+            <div class="pipeline-step">
+              <span>4</span>
+              <h3>Ranking</h3>
+              <p>Item dengan skor tertinggi ditampilkan sebagai rekomendasi.</p>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top: 1rem">
+            <article class="card card-pad">
+              <h3>TF-IDF</h3>
+              <p class="small">
+                Kata yang sering muncul di satu dokumen tetapi jarang di dokumen lain
+                mendapat bobot tinggi. Kuat, cepat, dan mudah dijelaskan, tetapi gagal
+                melihat sinonim dan variasi bentuk kata.
+              </p>
+            </article>
+            <article class="card card-pad">
+              <h3>Word Embedding</h3>
+              <p class="small">
+                Setiap kata menjadi vektor padat. Kata yang muncul dalam konteks serupa
+                memiliki vektor berdekatan, sehingga “astronaut” bisa dekat dengan
+                “Mars” dan “survive”.
+              </p>
+            </article>
+            <article class="card card-pad">
+              <h3>Sentence Embedding</h3>
+              <p class="small">
+                Seluruh kalimat dipetakan menjadi satu vektor. Pendekatan modern seperti
+                Sentence-BERT menangkap makna kalimat, bukan hanya kumpulan kata.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="word">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">02 · Word Embedding</span>
+              <h2>Kata yang muncul di konteks serupa akan berdekatan</h2>
+              <p>
+                Demo di bawah memakai korpus kecil 12 deskripsi film. Matriks
+                co-occurrence dihitung, diubah menjadi PPMI, lalu dimampatkan dengan SVD
+                menjadi vektor 48 dimensi. Ini adalah versi transparan dari ide Word2Vec:
+                makna kata dipelajari dari konteksnya.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card card-pad">
+              <h3>Bagaimana vektornya dibentuk?</h3>
+              <p class="small">
+                Untuk setiap kata, program mencatat kata-kata lain yang muncul dalam
+                jendela dua kata di sekitarnya. Sel yang jauh lebih sering muncul dari
+                yang diharapkan secara acak diberi bobot positif (PPMI). SVD kemudian
+                mengambil pola utama, sehingga vektor menjadi padat dan lebih tahan
+                terhadap noise.
+              </p>
+              <div class="formula-box">
+                <div class="formula">cos(w_i, w_j) = (w_i · w_j) / (||w_i|| ||w_j||)</div>
+                <p class="small" style="margin: 0">
+                  Nilai mendekati 1 berarti dua kata cenderung dipakai dalam konteks yang
+                  mirip. Nilai mendekati 0 berarti tidak ada kemiripan yang jelas.
+                </p>
+              </div>
+              <div class="note good">
+                <strong>Yang perlu diingat:</strong> word embedding statis memberi satu
+                vektor per kata. Kata “space” pada “space exploration” dan “space ranger”
+                tetap memakai vektor yang sama. Ini salah satu keterbatasannya.
+              </div>
+            </article>
+
+            <article class="card card-pad">
+              <h3>Eksplorasi tetangga terdekat</h3>
+              <form id="word-form" style="margin-top: 0.7rem">
+                <div class="field">
+                  <label for="word-input">Cari kata di kosakata demo</label>
+                  <input id="word-input" type="text" placeholder="contoh: astronaut, love, crime" autocomplete="off" />
+                </div>
+                <div class="pill-group" id="word-pills" aria-label="Contoh kata"></div>
+                <p class="hint" id="word-status"></p>
+              </form>
+              <div class="neighbor-list" id="neighbor-list" aria-live="polite"></div>
+              <div class="vector-box" id="word-vector-preview" style="margin-top: 1rem"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="sentence">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">03 · Sentence Embedding</span>
+              <h2>Dari kumpulan kata menjadi satu vektor kalimat</h2>
+              <p>
+                Ada dua tingkat yang ditampilkan di sini. <strong>Mean pooling</strong>
+                merata-ratakan vektor kata sebagai sentence embedding sederhana.
+                <strong>Sentence-BERT</strong> memakai model transformer yang dilatih
+                khusus agar kalimat dengan makna mirip memiliki vektor mirip. Pilih query
+                dan metode untuk melihat perbedaannya.
+              </p>
+            </div>
+          </div>
+
+          <div class="card card-pad" id="demo">
+            <div class="controls">
+              <div class="field">
+                <label for="query-select">Query / item yang disukai</label>
+                <select id="query-select"></select>
+              </div>
+              <div class="field">
+                <label>Metode representasi</label>
+                <div class="methods">
+                  <label class="method-option"><input type="radio" name="method" value="tfidf" /> TF-IDF</label>
+                  <label class="method-option"><input type="radio" name="method" value="word_mean" /> Word Embedding</label>
+                  <label class="method-option"><input type="radio" name="method" value="sbert" /> Sentence-BERT</label>
+                </div>
+              </div>
+              <button class="button button-secondary" id="reset-demo" type="button">Reset</button>
+            </div>
+
+            <div id="custom-query-box" hidden style="margin-top: 0.9rem">
+              <div class="field">
+                <label for="custom-query">Teks bebas untuk query</label>
+                <textarea id="custom-query" placeholder="contoh: a lonely astronaut tries to survive on a distant planet"></textarea>
+              </div>
+            </div>
+
+            <div class="note warm" id="sbert-disabled-note" hidden>
+              Sentence-BERT tidak dihitung untuk teks bebas di browser. Pilih deskripsi
+              film atau contoh teks, atau jalankan program Python untuk menguji teks
+              tersebut dengan model Sentence-BERT.
+            </div>
+
+            <div class="grid-2" style="margin-top: 1.2rem; align-items: start">
+              <div>
+                <h3 id="result-heading">Hasil rekomendasi</h3>
+                <div class="results" id="recommendation-list" aria-live="polite"></div>
+              </div>
+              <div>
+                <h3>Perbandingan tiga metode</h3>
+                <div class="card" style="box-shadow: none; overflow: hidden; margin-top: 0.7rem">
+                  <table class="compare-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>TF-IDF</th>
+                        <th>Word Embedding</th>
+                        <th>Sentence-BERT</th>
+                      </tr>
+                    </thead>
+                    <tbody id="comparison-body"></tbody>
+                  </table>
+                </div>
+                <div class="note" id="comparison-note"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 1rem">
+            <article class="card card-pad">
+              <h3>Mengapa hasilnya bisa berbeda?</h3>
+              <p class="small">
+                TF-IDF hanya menghitung kata yang sama persis. Word Embedding masih
+                bekerja pada tingkat kata, lalu dirata-ratakan; ia bisa menangkap
+                “astronaut” dan “Mars”, tetapi juga bisa tertipu oleh kata yang sama di
+                konteks berbeda. Sentence-BERT memproses urutan dan konteks seluruh
+                kalimat, sehingga “space ranger” (mainan) dan “space exploration”
+                (perjalanan antariksa) dapat dipisahkan lebih baik.
+              </p>
+            </article>
+            <article class="card card-pad">
+              <h3>Contoh satu langkah</h3>
+              <p class="small">
+                Query <em>Interstellar</em> dibandingkan dengan <em>The Martian</em>.
+                Ketiga metode sama-sama menempatkan <em>The Martian</em> di peringkat
+                pertama, tetapi skor dan urutan berikutnya berbeda. Perbedaan ini muncul
+                dari representasi yang dipakai, bukan dari data filmnya.
+              </p>
+              <div class="note good">
+                Coba ganti metode pada panel di atas dan perhatikan bagaimana peringkat
+                <em>Toy Story</em> dan <em>Arrival</em> bergerak.
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="hitung">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">04 · Perhitungan</span>
+              <h2>Contoh cosine similarity langkah demi langkah</h2>
+              <p>
+                Panel ini mengikuti query dan metode yang sedang aktif. Angka di bawah
+                dihitung langsung di browser dari vektor query dan kandidat teratas.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card card-pad">
+              <div id="cosine-panel"></div>
+            </article>
+            <article class="card card-pad">
+              <h3>Intip isi vektor</h3>
+              <p class="small">
+                Vektor padat tidak mudah dibaca manusia, tetapi beberapa dimensi pertama
+                cukup untuk menunjukkan bahwa representasi ini benar-benar berupa angka,
+                bukan sekadar label.
+              </p>
+              <div class="vector-box" id="vector-preview" style="margin-top: 0.9rem"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="catatan">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">05 · Catatan</span>
+              <h2>Batasan demo dan kaitannya dengan laporan</h2>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card card-pad">
+              <h3>Demo ini kecil, bukan tolok ukur produksi</h3>
+              <ul class="small">
+                <li>Korpus hanya 12 deskripsi film berbahasa Inggris; hasil bisa berubah pada data lain.</li>
+                <li>Word embedding dilatih dari korpus yang sangat kecil, sehingga kualitasnya jauh di bawah Word2Vec/GloVe/FastText yang dilatih pada miliaran kata.</li>
+                <li>Sentence-BERT memakai model <code>all-MiniLM-L6-v2</code> yang sudah dilatih; vektornya dihitung sekali oleh program Python dan disimpan sebagai data demo.</li>
+                <li>Cosine similarity mengukur kedekatan arah vektor, bukan relevansi pengguna yang sebenarnya.</li>
+              </ul>
+            </article>
+            <article class="card card-pad">
+              <h3>Yang dibahas lengkap di laporan</h3>
+              <ul class="small">
+                <li>Dasar CBF, TF-IDF, dan cosine similarity.</li>
+                <li>Word2Vec (CBOW/Skip-gram), GloVe, FastText, dan PPMI+SVD.</li>
+                <li>Mean pooling, SIF, Doc2Vec, Universal Sentence Encoder, dan Sentence-BERT.</li>
+                <li>Perbandingan hasil, evaluasi Precision@k/NDCG, cold start, bias, dan keterbatasan.</li>
+                <li>Contoh perhitungan dan kode program yang dapat dijalankan ulang.</li>
+              </ul>
+              <a class="button button-primary" href="report.pdf" style="margin-top: 0.9rem">Baca laporan lengkap</a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <span>Content-Based Filtering · Tugas kuliah Najib Robbani · 2026</span>
+        <span>
+          <a href="report.pdf">Laporan</a> ·
+          <a href="program/cbf_embeddings.py">Program</a> ·
+          <a href="https://github.com/najibrobbani74/college-task">Repository</a>
+        </span>
+      </div>
+    </footer>
+
+    <noscript>
+      <div class="container section">
+        <div class="note warm">Demo interaktif membutuhkan JavaScript. Laporan tetap dapat dibuka sebagai PDF.</div>
+      </div>
+    </noscript>
+  </body>
+</html>
